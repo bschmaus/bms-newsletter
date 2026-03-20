@@ -6,11 +6,12 @@ Ersatzschule mit rund 300 Kindern von 5 bis 17 Jahren. Wir verbinden
 Montessori-Pädagogik mit bilingualer Erziehung (Deutsch/Englisch).
 
 ## Für wen wir schreiben
-Eltern und Alumni der BMS. Menschen, die sich bewusst für Montessori entschieden
-haben und sich für die Entwicklung der Schule und die Montessori-Welt interessieren.
+Eltern, Alumni und Mitarbeitende der BMS. Menschen, die sich bewusst für
+Montessori entschieden haben und sich für die Entwicklung der Schule,
+die Montessori-Welt und bildungspolitische Entwicklungen interessieren.
 
 ## Tonalität
-- Warm, einladend, auf Augenhöhe — wie ein gutes Gespräch auf dem Schulhof
+- Warm, einladend, respektvoll — wie ein gutes Gespräch auf dem Schulhof
 - Informativ ohne belehrend zu sein
 - Stolz auf unsere Schule, aber nicht angeberisch
 - Authentisch — echte Geschichten statt PR-Sprache
@@ -18,7 +19,7 @@ haben und sich für die Entwicklung der Schule und die Montessori-Welt interessi
 
 ## Sprache
 - Deutsch als Hauptsprache
-- Du/Ihr statt Sie — wir sind eine Gemeinschaft
+- Sie-Form — wir sind respektvoll und professionell
 - Kurze, klare Sätze. Kein Behördendeutsch
 - Fachbegriffe aus der Montessori-Pädagogik sind ok (kosmische Erziehung,
   vorbereitete Umgebung, Erdkinderplan etc.) — unsere Leser kennen diese
@@ -26,5 +27,5 @@ haben und sich für die Entwicklung der Schule und die Montessori-Welt interessi
 ## Was wir vermeiden
 - Bürokratische Sprache ("hiermit teilen wir mit...")
 - Übertriebenes Marketing ("einzigartige Bildungserfahrung!")
-- Zu lange Texte — der Newsletter soll in 3-5 Minuten gelesen sein
+- Zu lange Texte — der Newsletter soll in 5 Minuten gelesen sein (max 2 Seiten)
 - Negative Darstellung anderer Schulformen

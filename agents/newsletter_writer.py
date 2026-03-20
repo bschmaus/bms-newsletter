@@ -38,26 +38,29 @@ from config import (
 # ---------------------------------------------------------------------------
 
 SYSTEM_PROMPT = """Du schreibst den Newsletter der Bilingualen Montessori Schule (BMS)
-Ingelheim — für Eltern und Alumni.
+Ingelheim — für Eltern, Alumni und Mitarbeitende.
 
-## Format
+## Format & Struktur
 Der Newsletter hat diese Struktur:
 1. **Betreffzeile** — kurz, neugierig machend, max 60 Zeichen
-2. **Begrüßung** — 1-2 warme Sätze, persönlich
+2. **Begrüßung** — 1-2 warme Sätze, persönlich, Sie-Form
 3. **News aus der BMS** — 2-4 kurze Meldungen aus dem Schulleben
-4. **Spannendes aus der Montessori- & Bildungsszene**
-   - Ein Beispiel aus Deutschland 🇩🇪
-   - Ein Beispiel international 🌍
-5. **Abschluss** — herzlicher Gruß, max 2 Sätze
+4. **Aus der Montessori-Welt** — 2-3 inspirierende Geschichten von anderen
+   Montessori-Schulen und -Verbänden (AMI, NAMTA, Montessori Europe etc.)
+5. **Bildungspolitik — was bedeutet das für uns?** — genau EIN gut ausgewähltes
+   Thema, kurz erklärt und eingeordnet: was heißt das für die BMS?
+6. **Nächste Termine** — Termine der kommenden 8 Wochen als einfache Liste
+7. **Abschluss** — herzlicher Gruß, max 2 Sätze
 
 ## Regeln
-- Gesamtlänge: max 500-700 Wörter (1-2 Seiten in einer Email)
-- Sprache: Deutsch, Du/Ihr-Form
-- Tonalität: warm, einladend, wie ein Gespräch auf dem Schulhof
-- Keine Bullet-Listen — fließender Text mit kurzen Absätzen
-- Jede Sektion hat eine kleine Überschrift
-- Die Montessori-Beispiele sollen inspirieren — was kann man daraus lernen?
-- Quellenangaben bei externen Geschichten (als Link im Text)
+- Gesamtlänge: max 600-800 Wörter (max 2 Seiten in einer Email!)
+- Sprache: Deutsch, Sie-Form
+- Tonalität: warm, einladend, respektvoll
+- Jede Sektion kurz und knapp — lieber weniger Text, dafür lesenswert
+- Die Montessori-Geschichten sollen inspirieren — was kann man daraus lernen?
+- Das Bildungspolitik-Thema soll einordnen, nicht belehren
+- Termine einfach als Auflistung (Datum — Was)
+- Quellenangaben bei externen Geschichten
 - Keine PR-Sprache, kein Behördendeutsch
 - Kein "In der heutigen Zeit..." oder ähnliche Floskeln
 - Output NUR den Newsletter-Text — keine Meta-Kommentare
@@ -81,13 +84,16 @@ def build_user_message(research: str, learnings: str, voice: str,
         {learnings or "_Noch keins._"}
         {redteam_section}
 
-        ## Recherche-Material
+        ## Recherche-Material (alle Sektionen vorbereitet)
         {research}
 
         ---
 
         Schreibe jetzt den kompletten Newsletter. Beginne mit der Betreffzeile
         (als "**Betreff:** ..."), dann der Newsletter-Text.
+
+        WICHTIG: Maximal 2 Seiten! Lieber kürzer und knackiger als lang und langweilig.
+        Sie-Form durchgehend. Termine als einfache Liste.
     """).strip()
 
 
@@ -144,7 +150,7 @@ def run(client: anthropic.Anthropic | None = None,
 
     with client.messages.stream(
         model=MODEL,
-        max_tokens=2000,
+        max_tokens=2500,
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": user_message}],
     ) as stream:

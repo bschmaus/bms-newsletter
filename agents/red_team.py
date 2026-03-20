@@ -4,7 +4,7 @@ Red Team Agent — BMS Newsletter
 Quality check before the newsletter goes out:
 
   1. Faktencheck — stimmen die Inhalte mit den Quellen überein?
-  2. Eltern-Perspektive — liest sich das gut für Eltern und Alumni?
+  2. Leser-Perspektive — liest sich das gut für Eltern, Alumni und Mitarbeitende?
 
 Iterates with newsletter_writer up to 2 times until approved.
 
@@ -49,21 +49,24 @@ MAX_ITERATIONS = 2
 
 SYSTEM_PROMPT = """\
 Du bist Qualitätsprüfer für den Newsletter einer Montessori-Schule.
-Deine Leser sind Eltern und Alumni — intelligente, engagierte Menschen,
-die wenig Zeit haben und keinen Marketing-Sprech mögen.
+Deine Leser sind Eltern, Alumni und Mitarbeitende — intelligente, engagierte
+Menschen, die wenig Zeit haben und keinen Marketing-Sprech mögen.
 
 ## Prüfung 1 — Fakten & Quellen
 - Stimmen die Inhalte mit den Recherche-Notizen überein?
 - Werden Quellen korrekt wiedergegeben?
 - Werden keine Behauptungen aufgestellt, die nicht belegt sind?
 
-## Prüfung 2 — Eltern-Perspektive
-Lies als Elternteil, das 3 Minuten beim Frühstückskaffee hat:
+## Prüfung 2 — Leser-Perspektive
+Lies als Elternteil/Mitarbeiter:in, das/die 5 Minuten hat:
 - Ist der Newsletter interessant genug, um bis zum Ende zu lesen?
 - Klingt er authentisch — wie die Schule, die ich kenne?
 - Oder klingt er wie eine PR-Abteilung?
-- Ist die Länge angemessen (max 1-2 Seiten)?
-- Sind die Montessori-Beispiele wirklich inspirierend?
+- Ist die Länge angemessen (max 2 Seiten)?
+- Wird durchgehend die Sie-Form verwendet?
+- Sind die Montessori-Geschichten wirklich inspirierend?
+- Ist das Bildungspolitik-Thema gut gewählt und eingeordnet?
+- Sind die Termine korrekt aufgelistet?
 
 ## Ausgabeformat
 Nutze GENAU diese Struktur:
@@ -71,7 +74,7 @@ Nutze GENAU diese Struktur:
 ### Fakten-Check
 [Bullet Points — oder "Keine Probleme gefunden." wenn sauber]
 
-### Eltern-Perspektive
+### Leser-Perspektive
 [Bullet Points — oder "Liest sich gut." wenn ok]
 
 ### Urteil
@@ -129,13 +132,13 @@ def parse_verdict(critique: str) -> str:
 
 def parse_revision_instructions(critique: str) -> str:
     facts   = _extract_section(critique, "Fakten-Check")
-    parent  = _extract_section(critique, "Eltern-Perspektive")
+    parent  = _extract_section(critique, "Leser-Perspektive")
     instruct = _extract_section(critique, "Überarbeitungshinweise")
     parts = []
     if facts and "keine probleme" not in facts.lower():
         parts.append(f"**Fakten-Probleme:**\n{facts}")
     if parent and "liest sich gut" not in parent.lower():
-        parts.append(f"**Eltern-Perspektive:**\n{parent}")
+        parts.append(f"**Leser-Perspektive:**\n{parent}")
     if instruct:
         parts.append(f"**Konkrete Hinweise:**\n{instruct}")
     return "\n\n".join(parts)

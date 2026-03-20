@@ -1,8 +1,10 @@
 """
 Scanning Agent — BMS Newsletter
 --------------------------------
-Pulls news from the BMS school website and Montessori/Bildung sources,
-then uses Claude to structure the raw content into newsletter-ready material.
+Pulls content from three source categories:
+  1. BMS website — school news + upcoming events (next 8 weeks)
+  2. Montessori world — other schools, AMI, NAMTA, Montessori Europe/Deutschland
+  3. Bildungspolitik — policy news (Schulbarometer, PISA, KMK, BM RLP, WEF, UN)
 
 Reads  : data/learnings.md           (feedback from past newsletters)
          data/newsletter_archive.md  (history — avoid repeating topics)
@@ -25,8 +27,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from config import (
     BMS_NEWS_URL,
-    RSS_FEEDS,
-    EXTRA_SOURCES,
+    BMS_TERMINE_URL,
+    RSS_FEEDS_MONTESSORI,
+    EXTRA_MONTESSORI_SOURCES,
+    RSS_FEEDS_BILDUNG,
+    EXTRA_BILDUNG_SOURCES,
     LEARNINGS_FILE,
     NEWSLETTER_ARCHIVE,
     RESEARCH_NOTES_FILE,
@@ -46,16 +51,14 @@ MAX_FEED_CHARS = 28_000
 # Helpers
 # ---------------------------------------------------------------------------
 
-def fetch_bms_news(url: str) -> str:
-    """Scrape the BMS news page and extract article titles + summaries."""
+def fetch_page(url: str, max_chars: int = 8000) -> str:
+    """Scrape a web page and return readable text."""
     try:
-        print(f"  🏫 Scraping BMS news: {url}")
         resp = requests.get(url, headers=BROWSER_HEADERS, timeout=15)
         resp.raise_for_status()
-        text = strip_html(resp.text)
-        return text[:8000]
+        return strip_html(resp.text)[:max_chars]
     except Exception as exc:
-        print(f"  ⚠️  Could not fetch BMS news: {exc}")
+        print(f"  ⚠️  Konnte {url} nicht abrufen: {exc}")
         return ""
 
 
@@ -80,60 +83,75 @@ def fetch_feed(url: str) -> list[dict]:
                 })
         return entries
     except Exception as exc:
-        print(f"  ⚠️  Could not fetch {url}: {exc}")
+        print(f"  ⚠️  Konnte {url} nicht abrufen: {exc}")
         return []
 
 
-def fetch_extra_source(url: str) -> str:
-    """Fetch a non-RSS page and return its visible text."""
-    try:
-        resp = requests.get(url, headers=BROWSER_HEADERS, timeout=10)
-        resp.raise_for_status()
-        text = strip_html(resp.text)
-        return text[:3000]
-    except Exception as exc:
-        print(f"  ⚠️  Could not scrape {url}: {exc}")
-        return ""
+def format_feed_entries(entries: list[dict], source_domain: str) -> str:
+    """Format feed entries into a markdown block."""
+    block = [f"### Quelle: {source_domain}"]
+    for e in entries:
+        block.append(f"**{e['title']}**")
+        if e["published"]:
+            block.append(f"_Veröffentlicht: {e['published']}_")
+        if e["link"]:
+            block.append(f"URL: {e['link']}")
+        if e["summary"]:
+            block.append(e["summary"])
+        block.append("")
+    return "\n".join(block)
 
 
-def fetch_all_content() -> tuple[str, str]:
+def fetch_all_content() -> tuple[str, str, str, str]:
     """
-    Fetch BMS news + external Montessori sources.
-    Returns (bms_content, external_content).
+    Fetch all content sources.
+    Returns (bms_news, bms_termine, montessori_content, bildung_content).
     """
     # --- BMS school news ---
-    bms_content = fetch_bms_news(BMS_NEWS_URL)
+    print(f"  🏫 BMS News: {BMS_NEWS_URL}")
+    bms_news = fetch_page(BMS_NEWS_URL)
 
-    # --- External Montessori / Bildung sources ---
-    sections = []
+    # --- BMS events ---
+    print(f"  📅 BMS Termine: {BMS_TERMINE_URL}")
+    bms_termine = fetch_page(BMS_TERMINE_URL, max_chars=5000)
 
-    for url in RSS_FEEDS:
-        print(f"  📡 RSS: {url}")
+    # --- Montessori sources ---
+    montessori_sections = []
+    for url in RSS_FEEDS_MONTESSORI:
+        print(f"  📡 Montessori RSS: {url}")
         entries = fetch_feed(url)
-        if not entries:
-            continue
-        source_domain = url.split("/")[2]
-        block = [f"### Quelle: {source_domain}"]
-        for e in entries:
-            block.append(f"**{e['title']}**")
-            if e["published"]:
-                block.append(f"_Veröffentlicht: {e['published']}_")
-            if e["link"]:
-                block.append(f"URL: {e['link']}")
-            if e["summary"]:
-                block.append(e["summary"])
-            block.append("")
-        sections.append("\n".join(block))
+        if entries:
+            domain = url.split("/")[2]
+            montessori_sections.append(format_feed_entries(entries, domain))
 
-    for url in EXTRA_SOURCES:
-        print(f"  🌐 Scraping: {url}")
-        text = fetch_extra_source(url)
+    for url in EXTRA_MONTESSORI_SOURCES:
+        print(f"  🌐 Montessori Scrape: {url}")
+        text = fetch_page(url, max_chars=3000)
         if text.strip():
             domain = url.split("/")[2]
-            sections.append(f"### Quelle: {domain}\nURL: {url}\n{text}")
+            montessori_sections.append(f"### Quelle: {domain}\nURL: {url}\n{text}")
 
-    external_content = "\n\n".join(sections)[:MAX_FEED_CHARS]
-    return bms_content, external_content
+    montessori_content = "\n\n".join(montessori_sections)[:MAX_FEED_CHARS // 2]
+
+    # --- Bildungspolitik sources ---
+    bildung_sections = []
+    for url in RSS_FEEDS_BILDUNG:
+        print(f"  📡 Bildung RSS: {url}")
+        entries = fetch_feed(url)
+        if entries:
+            domain = url.split("/")[2]
+            bildung_sections.append(format_feed_entries(entries, domain))
+
+    for url in EXTRA_BILDUNG_SOURCES:
+        print(f"  🌐 Bildung Scrape: {url}")
+        text = fetch_page(url, max_chars=3000)
+        if text.strip():
+            domain = url.split("/")[2]
+            bildung_sections.append(f"### Quelle: {domain}\nURL: {url}\n{text}")
+
+    bildung_content = "\n\n".join(bildung_sections)[:MAX_FEED_CHARS // 2]
+
+    return bms_news, bms_termine, montessori_content, bildung_content
 
 
 # ---------------------------------------------------------------------------
@@ -143,23 +161,35 @@ def fetch_all_content() -> tuple[str, str]:
 SYSTEM_PROMPT = """Du bist ein Redakteur für den Newsletter einer Montessori-Schule.
 Deine Aufgabe ist es, aus Rohinhalten strukturierte Newsletter-Bausteine zu erstellen.
 
-Der Newsletter hat zwei Sektionen:
+Der Newsletter hat diese Sektionen:
 
 ## Sektion 1: "News aus der BMS"
 - Extrahiere die 2-4 aktuellsten und interessantesten Neuigkeiten von der Schulwebsite
-- Fasse jede News in 2-3 Sätzen zusammen — warm, persönlich, auf Augenhöhe
+- Fasse jede News in 2-3 Sätzen zusammen — warm, persönlich, respektvoll (Sie-Form)
 - Wenn keine aktuellen News gefunden werden, notiere das ehrlich
 
-## Sektion 2: "Spannendes aus der Montessori- & Bildungsszene"
-- Finde genau 2 Geschichten:
-  1. Ein Montessori-Beispiel aus Deutschland
-  2. Ein Montessori-Beispiel international (weltweit)
-- Fokus auf positive, inspirierende Geschichten — was funktioniert, was ist innovativ
+## Sektion 2: "Aus der Montessori-Welt"
+- Finde die 2-3 interessantesten Geschichten aus den Montessori-Quellen
+- Fokus: andere Montessori-Schulen, Verbände (AMI, NAMTA, Montessori Europe,
+  Montessori Deutschland), Montessori Model United Nations
+- Positive, inspirierende Geschichten — was funktioniert, was ist innovativ
 - Immer mit Quellenangabe (Titel + URL)
 
+## Sektion 3: "Bildungspolitik — was bedeutet das für uns?"
+- Wähle GENAU EIN aktuelles bildungspolitisches Thema aus
+- Gute Themen: Schulbarometer (Robert Bosch Stiftung), Bildungsreport Telekom,
+  PISA-Studie, Kultusministerkonferenz, Bildungsministerium RLP,
+  World Economic Forum, United Nations Bildungsberichte
+- Erkläre kurz, worum es geht, und ordne ein: was bedeutet das für eine
+  Montessori-Schule wie die BMS?
+
+## Sektion 4: "Nächste Termine an der BMS"
+- Liste alle Termine der kommenden 8 Wochen aus dem Terminkalender
+- Einfache Auflistung: Datum — Termin (ggf. kurze Ergänzung)
+
 ## Richtlinien
-- Schreibe auf Deutsch
-- Tone: warm, einladend, für Eltern und Alumni
+- Schreibe auf Deutsch, Sie-Form
+- Tone: warm, einladend, für Eltern, Alumni und Mitarbeitende
 - Vermeide Behördendeutsch und PR-Sprache
 - Bevorzuge konkrete Geschichten vor abstrakten Trends
 - Integriere Feedback aus vergangenen Newslettern (Learnings)
@@ -168,7 +198,8 @@ Der Newsletter hat zwei Sektionen:
 """
 
 
-def build_user_message(bms_content: str, external_content: str,
+def build_user_message(bms_news: str, bms_termine: str,
+                       montessori_content: str, bildung_content: str,
                        learnings: str, archive: str) -> str:
     today = datetime.now().strftime("%A, %d. %B %Y")
     return textwrap.dedent(f"""
@@ -180,11 +211,17 @@ def build_user_message(bms_content: str, external_content: str,
         ## Bisherige Newsletter (Themen nicht wiederholen)
         {archive or "_Noch kein Archiv._"}
 
-        ## BMS-Website-Inhalte (Schulnews)
-        {bms_content or "_Keine BMS-News gefunden._"}
+        ## BMS-Website: Schulnews
+        {bms_news or "_Keine BMS-News gefunden._"}
 
-        ## Externe Montessori- & Bildungsquellen
-        {external_content or "_Keine externen Inhalte gefunden._"}
+        ## BMS-Website: Terminkalender
+        {bms_termine or "_Keine Termine gefunden._"}
+
+        ## Montessori-Quellen (Verbände, Schulen, Organisationen)
+        {montessori_content or "_Keine Montessori-Inhalte gefunden._"}
+
+        ## Bildungspolitik-Quellen
+        {bildung_content or "_Keine Bildungspolitik-Inhalte gefunden._"}
 
         ---
 
@@ -198,17 +235,26 @@ def build_user_message(bms_content: str, external_content: str,
         ### [News-Titel 2]
         [2-3 Sätze Zusammenfassung]
 
-        (weitere News falls vorhanden)
+        ## Sektion 2: Aus der Montessori-Welt
 
-        ## Sektion 2: Spannendes aus der Montessori- & Bildungsszene
-
-        ### 🇩🇪 [Titel Deutschland-Beispiel]
+        ### [Titel Geschichte 1]
         **Quelle:** [Titel + URL]
-        [3-4 Sätze — was ist passiert, warum ist es spannend]
+        [3-4 Sätze]
 
-        ### 🌍 [Titel Internationales Beispiel]
+        ### [Titel Geschichte 2]
         **Quelle:** [Titel + URL]
-        [3-4 Sätze — was ist passiert, warum ist es spannend]
+        [3-4 Sätze]
+
+        ## Sektion 3: Bildungspolitik — was bedeutet das für uns?
+
+        ### [Titel des Themas]
+        **Quelle:** [Titel + URL]
+        [4-5 Sätze: Was ist passiert? Was bedeutet das für die BMS?]
+
+        ## Sektion 4: Nächste Termine an der BMS
+        - [Datum] — [Termin]
+        - [Datum] — [Termin]
+        - ...
     """).strip()
 
 
@@ -227,18 +273,21 @@ def run(client: anthropic.Anthropic | None = None) -> str:
     archive   = read_file(NEWSLETTER_ARCHIVE)
 
     print("\n  Inhalte abrufen...")
-    bms_content, external_content = fetch_all_content()
+    bms_news, bms_termine, montessori_content, bildung_content = fetch_all_content()
 
-    if not bms_content.strip() and not external_content.strip():
-        print("  ⚠️  Keine Inhalte abgerufen — Claude nutzt Allgemeinwissen.")
+    if not any([bms_news.strip(), montessori_content.strip(), bildung_content.strip()]):
+        print("  ⚠️  Wenig Inhalte abgerufen — Claude nutzt Allgemeinwissen.")
 
     print("\n  Analysiere mit Claude...\n")
-    user_message = build_user_message(bms_content, external_content, learnings, archive)
+    user_message = build_user_message(
+        bms_news, bms_termine, montessori_content, bildung_content,
+        learnings, archive,
+    )
 
     collected = []
     with client.messages.stream(
         model=MODEL,
-        max_tokens=3000,
+        max_tokens=4000,
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": user_message}],
     ) as stream:

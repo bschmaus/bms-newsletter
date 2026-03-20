@@ -26,18 +26,29 @@ BROWSER_HEADERS = {
 MODEL = "claude-sonnet-4-6"
 
 # --- BMS school website ---
-BMS_NEWS_URL = "https://bilinguale-montessori-schule.de/de/aktuelles/news-de"
+BMS_NEWS_URL    = "https://bilinguale-montessori-schule.de/de/aktuelles/news-de"
+BMS_TERMINE_URL = "https://bilinguale-montessori-schule.de/de/aktuelles/termine"
 
-# --- Montessori & Bildung sources ---
-RSS_FEEDS = [
+# --- Montessori-Quellen (Schulen, Verbände, Organisationen) ---
+RSS_FEEDS_MONTESSORI = [
     "https://www.montessori-deutschland.de/feed/",           # Montessori Bundesverband
     "https://montessori-europe.com/feed/",                   # Montessori Europe
 ]
 
-# Fallback: pages to scrape when no RSS is available
-EXTRA_SOURCES = [
+EXTRA_MONTESSORI_SOURCES = [
     "https://montessori-ami.org/news",                       # AMI — international
-    "https://www.deutsches-schulportal.de/feed/",            # Schulportal — innovative Schulen
+    "https://www.namta.org/news",                            # NAMTA — North American Montessori
+]
+
+# --- Bildungspolitik-Quellen ---
+RSS_FEEDS_BILDUNG = [
+    "https://www.deutsches-schulportal.de/feed/",            # Schulportal — Robert Bosch Stiftung
+    "https://bildungsklick.de/rss/bildungsklick.xml",        # bildungsklick — Bildungsnachrichten
+]
+
+EXTRA_BILDUNG_SOURCES = [
+    "https://www.kmk.org",                                   # Kultusministerkonferenz
+    "https://bm.rlp.de/de/startseite/",                     # Bildungsministerium RLP
 ]
 
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
