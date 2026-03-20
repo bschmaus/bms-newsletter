@@ -146,14 +146,19 @@ Der Newsletter hat diese Sektionen:
 
 ## Sektion 1: "News aus der BMS"
 - Extrahiere die 2-4 aktuellsten und interessantesten Neuigkeiten von der Schulwebsite
-- Fasse jede News in 2-3 Sätzen zusammen — warm, persönlich, respektvoll (Sie-Form)
+- Fasse jede News KURZ zusammen (1-2 Sätze), aber arbeite die pädagogische Dimension
+  heraus: nicht nur WAS passiert ist, sondern WARUM es pädagogisch wertvoll ist
+- Wenn ein Link zum Originalartikel auf der BMS-Website existiert, diesen angeben
 - Wenn keine aktuellen News gefunden werden, notiere das ehrlich
 
 ## Sektion 2: "Aus der Montessori-Welt"
-- Finde die 2-3 interessantesten Geschichten aus den Montessori-Quellen
+- Wähle GENAU EINE Geschichte aus — die beste, tiefgründigste, relevanteste
+- Diese eine Geschichte dafür mit TIEFE aufbereiten: Kontext erklären, Hintergrund
+  liefern, Bezug zur BMS herstellen
+- Wenn Personen, Organisationen oder Konzepte erwähnt werden, die nicht allgemein
+  bekannt sind (z.B. John Hattie, Clara Grünwald, NAMTA), diese kurz einordnen
 - Fokus: andere Montessori-Schulen, Verbände (AMI, NAMTA, Montessori Europe,
   Montessori Deutschland), Montessori Model United Nations
-- Positive, inspirierende Geschichten — was funktioniert, was ist innovativ
 - Immer mit Quellenangabe (Titel + URL)
 
 ## Sektion 3: "Bildungspolitik — was bedeutet das für uns?"
@@ -161,18 +166,26 @@ Der Newsletter hat diese Sektionen:
 - Gute Themen: Schulbarometer (Robert Bosch Stiftung), Bildungsreport Telekom,
   PISA-Studie, Kultusministerkonferenz, Bildungsministerium RLP,
   World Economic Forum, United Nations Bildungsberichte
-- Erkläre kurz, worum es geht, und ordne ein: was bedeutet das für eine
-  Montessori-Schule wie die BMS?
+- Erkläre ausführlicher als bei anderen Sektionen: Was ist passiert? Was bedeutet das
+  für eine Montessori-Schule wie die BMS? Wie gehen wir konkret damit um?
+- Immer mit Quellenangabe und Link
 
 ## Sektion 4: "Nächste Termine an der BMS"
 - Liste alle Termine der kommenden 8 Wochen aus dem Terminkalender
 - Einfache Auflistung: Datum — Termin (ggf. kurze Ergänzung)
 
+## Sektion 5: "Montessori-Zitat"
+- Schlage ein passendes Zitat von Maria Montessori (oder einer anderen
+  Montessori-Persönlichkeit) vor, das thematisch zu den Inhalten passt
+- Mit Quellenangabe (Werk/Buch)
+
 ## Richtlinien
 - Schreibe auf Deutsch, Sie-Form
-- Tone: warm, einladend, für Eltern, Alumni und Mitarbeitende
+- Tone: anspruchsvoll, warm, persönlich — aber KEINE Floskeln oder Phrasen
 - Vermeide Behördendeutsch und PR-Sprache
 - Bevorzuge konkrete Geschichten vor abstrakten Trends
+- Denke über einen möglichen ROTEN FADEN nach: gibt es ein Thema, das mehrere
+  Sektionen verbindet? Notiere diesen Vorschlag am Anfang.
 - Integriere Feedback aus vergangenen Newslettern (Learnings)
 - Vermeide Themen, die kürzlich schon im Newsletter waren
 - Output NUR strukturiertes Markdown — keine Einleitung, kein Kommentar
