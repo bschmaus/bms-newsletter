@@ -103,13 +103,19 @@ def build_user_message(research: str, learnings: str, voice: str,
 
 def _replace_latest_entry(newsletter: str, subject: str) -> None:
     """Overwrite the most recent newsletter entry — used during red team revisions."""
+    import re
     content = read_file(NEWSLETTER_ARCHIVE)
-    idx = content.rfind("\n---\n")
-    base = content[:idx] if idx != -1 else content
+    # Find the last entry header and replace everything after it
+    headers = list(re.finditer(
+        r"^## \d{4}-\d{2}-\d{2} — .+$", content, re.MULTILINE
+    ))
+    if headers:
+        base = content[:headers[-1].start()]
+    else:
+        base = content
     today_str  = datetime.now().strftime("%Y-%m-%d")
     timestamp  = datetime.now().strftime("%Y-%m-%d %H:%M")
     entry = (
-        f"\n---\n\n"
         f"## {today_str} — {subject}\n\n"
         f"_Erstellt: {timestamp} | Status: Entwurf_\n\n"
         f"{newsletter}\n"

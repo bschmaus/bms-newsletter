@@ -11,20 +11,28 @@ from html.parser import HTMLParser
 # ---------------------------------------------------------------------------
 
 def extract_latest_newsletter(archive: str) -> tuple[str, str]:
-    """Return (subject, newsletter_text) for the most recent entry in newsletter_archive.md."""
-    blocks = re.split(r"\n---\n", archive)
-    for block in reversed(blocks):
-        block = block.strip()
-        if not block or block.startswith("# Newsletter"):
-            continue
-        title_match = re.search(r"^## \d{4}-\d{2}-\d{2} — (.+)$", block, re.MULTILINE)
-        title = title_match.group(1).strip() if title_match else "Newsletter"
-        lines = [
-            l for l in block.splitlines()
-            if not l.startswith("## ") and not l.startswith("_Erstellt:")
-        ]
-        return title, "\n".join(lines).strip()
-    return "Newsletter", ""
+    """Return (subject, newsletter_text) for the most recent entry in newsletter_archive.md.
+
+    Entries are delimited by '## YYYY-MM-DD — ...' headers. We find the last one
+    and return everything after the metadata line as the newsletter body.
+    This correctly handles '---' horizontal rules within the newsletter content.
+    """
+    # Find all entry headers and their positions
+    headers = list(re.finditer(r"^## (\d{4}-\d{2}-\d{2}) — (.+)$", archive, re.MULTILINE))
+    if not headers:
+        return "Newsletter", ""
+
+    last = headers[-1]
+    title = last.group(2).strip()
+    # Extract everything after this header
+    body = archive[last.end():]
+    # Strip the metadata line (_Erstellt: ..._)
+    lines = body.splitlines()
+    content_lines = [
+        l for l in lines
+        if not l.startswith("_Erstellt:")
+    ]
+    return title, "\n".join(content_lines).strip()
 
 
 # ---------------------------------------------------------------------------
