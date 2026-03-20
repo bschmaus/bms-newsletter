@@ -38,7 +38,7 @@ from config import (
     read_file,
     ensure_data_dir,
 )
-from agents.utils import extract_latest_newsletter
+from agents.utils import extract_latest_newsletter, stream_claude
 
 MAX_ITERATIONS = 2
 
@@ -202,19 +202,10 @@ def run(client: anthropic.Anthropic | None = None) -> str:
             newsletter, research, learnings, voice, iteration, prior_feedback,
         )
 
-        collected = []
-        with client.messages.stream(
-            model=MODEL,
-            max_tokens=1500,
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": prompt}],
-        ) as stream:
-            for text in stream.text_stream:
-                print(text, end="", flush=True)
-                collected.append(text)
-
-        print("\n")
-        critique = "".join(collected).strip()
+        critique = stream_claude(
+            client, model=MODEL, system=SYSTEM_PROMPT,
+            user_message=prompt, max_tokens=1500,
+        )
         entries.append({"iteration": iteration, "critique": critique})
         save_redteam_notes(subject, entries)
 

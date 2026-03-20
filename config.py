@@ -1,5 +1,4 @@
 """Shared configuration and file paths for BMS Newsletter."""
-import os
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -30,8 +29,6 @@ BMS_NEWS_URL    = "https://bilinguale-montessori-schule.de/de/aktuelles/news-de"
 BMS_TERMINE_URL = "https://bilinguale-montessori-schule.de/de/aktuelles/termine"
 
 # --- Montessori-Quellen (Schulen, Verbände, Organisationen) ---
-RSS_FEEDS_MONTESSORI = []
-
 EXTRA_MONTESSORI_SOURCES = [
     "https://www.montessori-deutschland.de/aktuelles/",      # Montessori Bundesverband
     "https://www.montessori-europe.net/inspiration/",        # Montessori Europe
@@ -49,9 +46,6 @@ EXTRA_BILDUNG_SOURCES = [
     "https://www.kmk.org/aktuelles/pressemitteilungen.html", # Kultusministerkonferenz
     "https://bm.rlp.de/service/pressemitteilungen",          # Bildungsministerium RLP
 ]
-
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
-
 
 def read_file(path: Path) -> str:
     """Read a shared data file. Returns empty string if missing."""

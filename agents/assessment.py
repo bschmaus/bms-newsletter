@@ -12,7 +12,6 @@ Run standalone:
     python -m agents.assessment
 """
 
-import re
 import sys
 import textwrap
 from datetime import datetime
@@ -30,7 +29,7 @@ from config import (
     read_file,
     ensure_data_dir,
 )
-from agents.utils import extract_latest_newsletter
+from agents.utils import extract_latest_newsletter, stream_claude
 
 
 # ---------------------------------------------------------------------------
@@ -101,20 +100,11 @@ def run(client: anthropic.Anthropic | None = None) -> str:
     print("-" * 60)
 
     prompt = build_prompt(newsletter, research, existing)
-    collected = []
-
-    with client.messages.stream(
-        model=MODEL,
-        max_tokens=2000,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": prompt}],
-    ) as stream:
-        for text in stream.text_stream:
-            print(text, end="", flush=True)
-            collected.append(text)
-
-    print("\n" + "-" * 60 + "\n")
-    assessment_body = "".join(collected).strip()
+    assessment_body = stream_claude(
+        client, model=MODEL, system=SYSTEM_PROMPT,
+        user_message=prompt, max_tokens=2000,
+    )
+    print("-" * 60 + "\n")
 
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
     entry = f"\n---\n\n## Bewertung: {subject}\n_Bewertet: {timestamp}_\n\n{assessment_body}\n"

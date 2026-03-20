@@ -13,6 +13,7 @@ Run standalone:
     python -m agents.newsletter_writer
 """
 
+import re
 import sys
 import textwrap
 from datetime import datetime
@@ -31,6 +32,7 @@ from config import (
     read_file,
     ensure_data_dir,
 )
+from agents.utils import stream_claude
 
 
 # ---------------------------------------------------------------------------
@@ -103,7 +105,6 @@ def build_user_message(research: str, learnings: str, voice: str,
 
 def _replace_latest_entry(newsletter: str, subject: str) -> None:
     """Overwrite the most recent newsletter entry — used during red team revisions."""
-    import re
     content = read_file(NEWSLETTER_ARCHIVE)
     # Find the last entry header and replace everything after it
     headers = list(re.finditer(
@@ -152,20 +153,11 @@ def run(client: anthropic.Anthropic | None = None,
     print("-" * 60)
 
     user_message = build_user_message(research, learnings, voice, redteam_feedback)
-    collected = []
-
-    with client.messages.stream(
-        model=MODEL,
-        max_tokens=2500,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": user_message}],
-    ) as stream:
-        for text in stream.text_stream:
-            print(text, end="", flush=True)
-            collected.append(text)
-
-    print("\n" + "-" * 60 + "\n")
-    newsletter = "".join(collected).strip()
+    newsletter = stream_claude(
+        client, model=MODEL, system=SYSTEM_PROMPT,
+        user_message=user_message, max_tokens=2500,
+    )
+    print("-" * 60 + "\n")
 
     # Extract subject line for the archive header
     subject = "Newsletter"

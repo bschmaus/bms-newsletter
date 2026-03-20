@@ -5,6 +5,8 @@ Shared utilities used across BMS Newsletter agents.
 import re
 from html.parser import HTMLParser
 
+import anthropic
+
 
 # ---------------------------------------------------------------------------
 # Newsletter parsing
@@ -68,3 +70,24 @@ def strip_html(html: str) -> str:
     parser = _StripHTML()
     parser.feed(html)
     return parser.get_text()
+
+
+# ---------------------------------------------------------------------------
+# Claude streaming helper
+# ---------------------------------------------------------------------------
+
+def stream_claude(client: anthropic.Anthropic, *, model: str, system: str,
+                  user_message: str, max_tokens: int = 3000) -> str:
+    """Stream a Claude response, printing tokens as they arrive. Returns full text."""
+    collected: list[str] = []
+    with client.messages.stream(
+        model=model,
+        max_tokens=max_tokens,
+        system=system,
+        messages=[{"role": "user", "content": user_message}],
+    ) as stream:
+        for text in stream.text_stream:
+            print(text, end="", flush=True)
+            collected.append(text)
+    print("\n")
+    return "".join(collected).strip()

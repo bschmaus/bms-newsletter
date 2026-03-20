@@ -28,7 +28,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from config import (
     BMS_NEWS_URL,
     BMS_TERMINE_URL,
-    RSS_FEEDS_MONTESSORI,
     EXTRA_MONTESSORI_SOURCES,
     RSS_FEEDS_BILDUNG,
     EXTRA_BILDUNG_SOURCES,
@@ -39,7 +38,7 @@ from config import (
     read_file,
     ensure_data_dir,
 )
-from agents.utils import strip_html
+from agents.utils import strip_html, stream_claude
 
 # Scanning uses Sonnet to keep costs down
 MODEL = "claude-sonnet-4-6"
@@ -102,54 +101,36 @@ def format_feed_entries(entries: list[dict], source_domain: str) -> str:
     return "\n".join(block)
 
 
+def _fetch_category(label: str, rss_feeds: list[str], scrape_urls: list[str],
+                    max_chars: int = MAX_FEED_CHARS // 2) -> str:
+    """Fetch RSS feeds + scraped pages for a source category. Returns markdown."""
+    sections: list[str] = []
+    for url in rss_feeds:
+        print(f"  📡 {label} RSS: {url}")
+        entries = fetch_feed(url)
+        if entries:
+            sections.append(format_feed_entries(entries, url.split("/")[2]))
+    for url in scrape_urls:
+        print(f"  🌐 {label} Scrape: {url}")
+        text = fetch_page(url, max_chars=3000)
+        if text.strip():
+            sections.append(f"### Quelle: {url.split('/')[2]}\nURL: {url}\n{text}")
+    return "\n\n".join(sections)[:max_chars]
+
+
 def fetch_all_content() -> tuple[str, str, str, str]:
     """
     Fetch all content sources.
     Returns (bms_news, bms_termine, montessori_content, bildung_content).
     """
-    # --- BMS school news ---
     print(f"  🏫 BMS News: {BMS_NEWS_URL}")
     bms_news = fetch_page(BMS_NEWS_URL)
 
-    # --- BMS events ---
     print(f"  📅 BMS Termine: {BMS_TERMINE_URL}")
     bms_termine = fetch_page(BMS_TERMINE_URL, max_chars=5000)
 
-    # --- Montessori sources ---
-    montessori_sections = []
-    for url in RSS_FEEDS_MONTESSORI:
-        print(f"  📡 Montessori RSS: {url}")
-        entries = fetch_feed(url)
-        if entries:
-            domain = url.split("/")[2]
-            montessori_sections.append(format_feed_entries(entries, domain))
-
-    for url in EXTRA_MONTESSORI_SOURCES:
-        print(f"  🌐 Montessori Scrape: {url}")
-        text = fetch_page(url, max_chars=3000)
-        if text.strip():
-            domain = url.split("/")[2]
-            montessori_sections.append(f"### Quelle: {domain}\nURL: {url}\n{text}")
-
-    montessori_content = "\n\n".join(montessori_sections)[:MAX_FEED_CHARS // 2]
-
-    # --- Bildungspolitik sources ---
-    bildung_sections = []
-    for url in RSS_FEEDS_BILDUNG:
-        print(f"  📡 Bildung RSS: {url}")
-        entries = fetch_feed(url)
-        if entries:
-            domain = url.split("/")[2]
-            bildung_sections.append(format_feed_entries(entries, domain))
-
-    for url in EXTRA_BILDUNG_SOURCES:
-        print(f"  🌐 Bildung Scrape: {url}")
-        text = fetch_page(url, max_chars=3000)
-        if text.strip():
-            domain = url.split("/")[2]
-            bildung_sections.append(f"### Quelle: {domain}\nURL: {url}\n{text}")
-
-    bildung_content = "\n\n".join(bildung_sections)[:MAX_FEED_CHARS // 2]
+    montessori_content = _fetch_category("Montessori", [], EXTRA_MONTESSORI_SOURCES)
+    bildung_content = _fetch_category("Bildung", RSS_FEEDS_BILDUNG, EXTRA_BILDUNG_SOURCES)
 
     return bms_news, bms_termine, montessori_content, bildung_content
 
@@ -284,19 +265,10 @@ def run(client: anthropic.Anthropic | None = None) -> str:
         learnings, archive,
     )
 
-    collected = []
-    with client.messages.stream(
-        model=MODEL,
-        max_tokens=4000,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": user_message}],
-    ) as stream:
-        for text in stream.text_stream:
-            print(text, end="", flush=True)
-            collected.append(text)
-
-    print("\n")
-    research_output = "".join(collected)
+    research_output = stream_claude(
+        client, model=MODEL, system=SYSTEM_PROMPT,
+        user_message=user_message, max_tokens=4000,
+    )
 
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
     notes = f"# Recherche-Notizen — {timestamp}\n\n{research_output}\n"
