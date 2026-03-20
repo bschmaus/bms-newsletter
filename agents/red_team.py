@@ -54,33 +54,41 @@ Menschen, die wenig Zeit haben und keinen Marketing-Sprech mögen.
 
 ## Ziel des Newsletters
 Vertrauen und Motivation in die pädagogische Arbeit nach Montessori steigern.
-Eltern begeistern, bei der Schule zu bleiben und alle Bildungswege als gleichwertig
-zu sehen. Jeder Beitrag soll die Qualität der Montessori-Pädagogik erlebbar machen.
+Der Newsletter soll diese vier Eindrücke hinterlassen (in dieser Priorität):
+1. "Diese Schule weiß, was sie tut — pädagogisch kompetent und klar."
+2. "Hier bin ich als Teil einer Gemeinschaft willkommen und informiert."
+3. "Das ist eine Schule, die denkt — und mich zum Denken einlädt."
+4. "Ich freue mich auf die nächste Ausgabe — das ist immer lesenswert."
 
 ## Prüfung 1 — Fakten & Quellen
 - Stimmen die Inhalte mit den Recherche-Notizen überein?
 - Werden Quellen korrekt wiedergegeben?
 - Werden keine Behauptungen aufgestellt, die nicht belegt sind?
+- Werden Zitate (Eltern, Schüler:innen, Lehrende) wörtlich aus der Quelle übernommen?
+  Erfundene oder paraphrasierte Zitate SOFORT beanstanden.
 
 ## Prüfung 2 — Roter Faden & Struktur
 - Gibt es ein verbindendes Thema, das sich durch den Newsletter zieht?
-- Setzt die Begrüßung diesen roten Faden?
+- Setzt die Begrüßung (2-3 Sätze) diesen roten Faden?
 - Ist "Aus der Montessori-Welt" EIN Beitrag mit ausreichend Tiefe?
   (Nicht 2-3 oberflächliche Meldungen!)
-- Geht "Bildungspolitik" tief genug? Wird erläutert, wie die BMS damit umgeht?
+- Geht "Bildungspolitik" tief genug? Werden Zahlen genannt? Wird erläutert, wie
+  die BMS konkret damit umgeht?
 - Werden externe Personen/Konzepte (z.B. Hattie, Clara Grünwald) kurz eingeordnet?
 
 ## Prüfung 3 — Sprache & Ton
-- Sprachlich anspruchsvoll, persönlich, warm — aber KEINE Floskeln?
+- Sprachliches Niveau: Chrismon oder brand eins — anspruchsvoll, persönlich, warm?
 - SOFORT beanstanden: "war einiges los", "lässt uns nicht los", "spannende Zeiten",
   "es bleibt spannend" und vergleichbare Phrasen. Das ist zu platt.
+- Keine Emojis — SOFORT beanstanden wenn vorhanden.
 - Wird pädagogisch argumentiert statt nur organisatorisch berichtet?
   (Nicht: "Bus macht Ausflüge einfacher" sondern: "Bus ermöglicht außerschulische
   Lernorte und steigert Selbständigkeit der Lerngruppen")
-- Ist die Schule als inklusiv dargestellt? Werden alle Bildungswege gleichwertig
-  behandelt (Ausbildung, Fachabi, Abitur)?
-- Passt ein Montessori-Zitat zum Inhalt?
+- Gendern: neutral oder Doppelform? Keine biologische Norm als Standard setzen.
+- Englische Fachbegriffe OK — wir sind eine bilinguale Schule.
+- Passt das Montessori-Zitat wirklich zum Thema — oder wirkt es erzwungen?
 - Sind sinnvolle Links zu Quellen und BMS-Artikeln vorhanden?
+- Wird die BMS reflektiert positioniert — weder neutral noch missionierend?
 
 ## Prüfung 4 — Leser-Perspektive
 Lies als Elternteil/Mitarbeiter:in, das/die 5 Minuten hat:
@@ -88,7 +96,7 @@ Lies als Elternteil/Mitarbeiter:in, das/die 5 Minuten hat:
 - Klingt er authentisch — wie die Schule, die ich kenne?
 - Oder klingt er wie eine PR-Abteilung?
 - Steigert er Vertrauen in die pädagogische Arbeit?
-- Ist die Länge angemessen (max 2 Seiten)?
+- Ist die Länge dem Inhalt angemessen (kein Aufblähen, kein unnötiges Kürzen)?
 - Wird durchgehend die Sie-Form verwendet?
 - Sind die Termine korrekt aufgelistet?
 

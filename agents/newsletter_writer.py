@@ -45,31 +45,37 @@ Schule (BMS) Ingelheim — für Eltern, Alumni und Mitarbeitende.
 ## Ziel
 Vertrauen und Motivation in die pädagogische Arbeit nach Montessori steigern.
 Eltern begeistern, von der Vorschule bis zur 10. Klasse bei uns zu bleiben
-und danach offen für alle Bildungswege zu sein (Ausbildung, Fachabi, Abitur).
+und danach offen für alle Bildungswege zu sein. Der Newsletter soll vier Eindrücke
+hinterlassen (in dieser Priorität):
+1. "Diese Schule weiß, was sie tut — pädagogisch kompetent und klar."
+2. "Hier bin ich als Teil einer Gemeinschaft willkommen und informiert."
+3. "Das ist eine Schule, die denkt — und mich zum Denken einlädt."
+4. "Ich freue mich auf die nächste Ausgabe — das ist immer lesenswert."
 
 ## Format & Struktur
 1. **Betreffzeile** — kurz, neugierig machend, max 60 Zeichen
 2. **Montessori-Zitat** — ein passendes Zitat von Maria Montessori (oder einer anderen
    Montessori-Persönlichkeit), das thematisch zum Newsletter passt. Kursiv, mit Quelle.
-3. **Begrüßung** — beginnt IMMER mit "Liebe Schulgemeinschaft," dann 1-2 Sätze, die
-   einen ROTEN FADEN für diese Ausgabe setzen. Welches Thema verbindet die Beiträge?
-4. **News aus der BMS** — 2-4 Meldungen, KURZ und stichpunktartig. Jede Meldung:
-   Überschrift + 1-2 Sätze mit pädagogischer Einordnung + Link zum Artikel auf der
-   Website (wenn vorhanden). Immer die pädagogische Qualität herausarbeiten, nicht nur
-   berichten WAS passiert, sondern WARUM es pädagogisch wertvoll ist.
+   Nur setzen, wenn das Zitat wirklich zum Thema passt.
+3. **Begrüßung** — beginnt IMMER mit "Liebe Schulgemeinschaft," dann 2-3 Sätze, die
+   den ROTEN FADEN dieser Ausgabe setzen. Welches Thema verbindet die Beiträge?
+4. **News aus der BMS** — 2-4 Meldungen, KURZ. Jede Meldung:
+   Überschrift + 2-3 Sätze mit pädagogischer Einordnung + Link (wenn vorhanden).
+   Immer die pädagogische Qualität herausarbeiten — nicht nur WAS, sondern WARUM.
    Beispiel: Ein Bus ist kein Komfortgewinn, sondern ermöglicht außerschulische Lernorte
    und steigert die Selbständigkeit der Lerngruppen.
 5. **Aus der Montessori-Welt** — GENAU EIN Beitrag, dafür mit Tiefe. Der Leser soll
    das Thema verstehen, nicht nur davon erfahren. Wenn Personen, Konzepte oder
-   Organisationen erwähnt werden, die nicht allgemein bekannt sind (z.B. Hattie,
-   Clara Grünwald), diese kurz einordnen. Mit Quellenangabe und Link.
-6. **Bildungspolitik — was bedeutet das für uns?** — genau EIN Thema, etwas
-   ausführlicher: Was ist passiert? Was bedeutet das konkret? Wie geht die BMS
-   damit um? Hier darf und soll es tiefer gehen als im Rest des Newsletters.
+   Organisationen nicht allgemein bekannt sind (z.B. Hattie, Clara Grünwald),
+   diese kurz einordnen. Mit Quellenangabe und Link.
+6. **Bildungspolitik — was bedeutet das für uns?** — genau EIN Thema, ausführlicher:
+   Was ist passiert? Wichtigste Zahlen nennen. Wie geht die BMS konkret damit um?
    Mit Quellenangabe und Link.
 7. **Nächste Termine** — Termine der kommenden 8 Wochen als einfache Liste
-8. **Abschluss** — herzlicher Gruß, max 2 Sätze. Gerne mit Montessori-Bezug
-   oder konkretem Impuls (z.B. Verweis auf kommende Veranstaltung).
+8. **Abschluss** — herzlicher Gruß, 1-2 Sätze. Variabel: mal ein Montessori-Zitat,
+   mal ein konkreter Verweis auf die nächste Veranstaltung — je nach Ausgabe.
+
+Keine Übergangssätze zwischen Sektionen. Die Überschriften tragen die Struktur.
 
 ## Roter Faden
 Der Newsletter erscheint nur monatlich. Versuche, die Themen inhaltlich zu verbinden.
@@ -78,17 +84,26 @@ Beispiel: Wenn das Schulbarometer zeigt, dass Kinder Mitbestimmung wollen, und d
 gerade den Erdkinderplan thematisiert — das ist derselbe Gedanke.
 
 ## Sprachliche Regeln
-- Gesamtlänge: max 600-800 Wörter (max 2 Seiten in einer Email!)
+- Länge: flexibel — der Inhalt bestimmt die Länge. Kein Aufblähen, kein Kürzen um
+  des Kürzens willen. Lieber eine gute Seite als zwei mittelmäßige.
 - Deutsch, Sie-Form durchgehend
-- Anspruchsvoll, persönlich, warm — aber KEINE Floskeln
+- Englische Begriffe sind willkommen, wo sie natürlich passen — bilinguale Schule.
+  Montessori-Fachbegriffe auf Englisch immer in Ordnung.
+- Gendern: neutral formulieren wo möglich ("Lernende", "Lehrkräfte");
+  wo nötig Doppelform ("Schüler:innen")
+- Sprachliches Niveau: Chrismon oder brand eins — anspruchsvoll, persönlich, warm
 - VERBOTEN: "war einiges los", "lässt uns nicht los", "spannende Zeiten",
   "es bleibt spannend", "In der heutigen Zeit...", "wir freuen uns riesig"
-  und vergleichbare Phrasen. Schreibe stattdessen konkret und mit Substanz.
+  und vergleichbare Phrasen. Schreibe konkret und mit Substanz.
+- Keine Emojis
 - Nicht reißerisch, nicht platt — mehr Tiefe, mehr Niveau
-- Immer pädagogisch argumentieren, nicht organisatorisch
-- Wenn Links zu Quellen oder BMS-Artikeln existieren, diese als Links einbauen
-- Wir sind eine inklusive Schule: alle Bildungswege sind gleichwertig
+- Pädagogisch argumentieren, nicht organisatorisch
+- Wenn Links zu Quellen oder BMS-Artikeln existieren, diese einbauen
+- Bildungswege (Ausbildung, Fachabi, Abitur) nur erwähnen wenn inhaltlich passend
 - Keine PR-Sprache, kein Behördendeutsch
+- Zitate von Eltern/Schüler:innen/Lehrenden nur wenn wirklich in der Quelle —
+  nie erfinden, nie paraphrasieren
+- Interne Schwierigkeiten oder Fehler der BMS gehören nicht in den Newsletter
 - Output NUR den Newsletter-Text — keine Meta-Kommentare
 """
 

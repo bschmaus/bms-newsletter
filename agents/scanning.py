@@ -146,7 +146,7 @@ Der Newsletter hat diese Sektionen:
 
 ## Sektion 1: "News aus der BMS"
 - Extrahiere die 2-4 aktuellsten und interessantesten Neuigkeiten von der Schulwebsite
-- Fasse jede News KURZ zusammen (1-2 Sätze), aber arbeite die pädagogische Dimension
+- Fasse jede News KURZ zusammen (2-3 Sätze), aber arbeite die pädagogische Dimension
   heraus: nicht nur WAS passiert ist, sondern WARUM es pädagogisch wertvoll ist
 - Wenn ein Link zum Originalartikel auf der BMS-Website existiert, diesen angeben
 - Wenn keine aktuellen News gefunden werden, notiere das ehrlich
@@ -166,8 +166,9 @@ Der Newsletter hat diese Sektionen:
 - Gute Themen: Schulbarometer (Robert Bosch Stiftung), Bildungsreport Telekom,
   PISA-Studie, Kultusministerkonferenz, Bildungsministerium RLP,
   World Economic Forum, United Nations Bildungsberichte
-- Erkläre ausführlicher als bei anderen Sektionen: Was ist passiert? Was bedeutet das
-  für eine Montessori-Schule wie die BMS? Wie gehen wir konkret damit um?
+- Erkläre ausführlicher als bei anderen Sektionen: Was ist passiert? Die wichtigsten
+  Zahlen nennen. Was bedeutet das für eine Montessori-Schule wie die BMS?
+  Wie gehen wir konkret damit um?
 - Immer mit Quellenangabe und Link
 
 ## Sektion 4: "Nächste Termine an der BMS"
@@ -178,16 +179,24 @@ Der Newsletter hat diese Sektionen:
 - Schlage ein passendes Zitat von Maria Montessori (oder einer anderen
   Montessori-Persönlichkeit) vor, das thematisch zu den Inhalten passt
 - Mit Quellenangabe (Werk/Buch)
+- Nur wenn ein wirklich passendes Zitat gefunden wird — besser keins als ein
+  erzwungenes
 
 ## Richtlinien
 - Schreibe auf Deutsch, Sie-Form
-- Tone: anspruchsvoll, warm, persönlich — aber KEINE Floskeln oder Phrasen
+- Englische Fachbegriffe (v.a. Montessori) sind in Ordnung — bilinguale Schule
+- Gendern: neutral wo möglich, sonst Doppelform (Schüler:innen)
+- Ton: anspruchsvoll, warm, persönlich — Niveau wie Chrismon oder brand eins
+- Keine Floskeln oder Phrasen ("war einiges los", "es bleibt spannend" etc.)
+- Keine Emojis
 - Vermeide Behördendeutsch und PR-Sprache
 - Bevorzuge konkrete Geschichten vor abstrakten Trends
+- Bildungswege (Ausbildung, Fachabi, Abitur) nur erwähnen wenn inhaltlich passend
 - Denke über einen möglichen ROTEN FADEN nach: gibt es ein Thema, das mehrere
   Sektionen verbindet? Notiere diesen Vorschlag am Anfang.
 - Integriere Feedback aus vergangenen Newslettern (Learnings)
 - Vermeide Themen, die kürzlich schon im Newsletter waren
+- Zitate von Personen nur wenn wirklich in der Quelle belegt — nie erfinden
 - Output NUR strukturiertes Markdown — keine Einleitung, kein Kommentar
 """
 
