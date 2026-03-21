@@ -29,6 +29,7 @@ from config import (
     LEARNINGS_FILE,
     NEWSLETTER_ARCHIVE,
     VOICE_FILE,
+    SCHOOL_CONTEXT_FILE,
     read_file,
     ensure_data_dir,
 )
@@ -89,7 +90,7 @@ gerade den Erdkinderplan thematisiert — das ist derselbe Gedanke.
 - Deutsch, Sie-Form durchgehend
 - Englische Begriffe sind willkommen, wo sie natürlich passen — bilinguale Schule.
   Montessori-Fachbegriffe auf Englisch immer in Ordnung.
-- Gendern: neutral formulieren wo möglich ("Lernende", "Lehrkräfte");
+- Gendern: neutral formulieren wo möglich ("Lernende");
   wo nötig Doppelform ("Schüler:innen")
 - Sprachliches Niveau: Chrismon oder brand eins — anspruchsvoll, persönlich, warm
 - VERBOTEN: "war einiges los", "lässt uns nicht los", "spannende Zeiten",
@@ -97,19 +98,49 @@ gerade den Erdkinderplan thematisiert — das ist derselbe Gedanke.
   und vergleichbare Phrasen. Schreibe konkret und mit Substanz.
 - Keine Emojis
 - Nicht reißerisch, nicht platt — mehr Tiefe, mehr Niveau
+- Kein akademischer Jargon ("Desiderat", "Paradigma") — gehobene Alltagssprache
 - Pädagogisch argumentieren, nicht organisatorisch
 - Wenn Links zu Quellen oder BMS-Artikeln existieren, diese einbauen
 - Bildungswege (Ausbildung, Fachabi, Abitur) nur erwähnen wenn inhaltlich passend
 - Keine PR-Sprache, kein Behördendeutsch
-- Zitate von Eltern/Schüler:innen/Lehrenden nur wenn wirklich in der Quelle —
+- Zitate von Eltern/Schüler:innen/Lernbegleiter:innen nur wenn wirklich in der Quelle —
   nie erfinden, nie paraphrasieren
 - Interne Schwierigkeiten oder Fehler der BMS gehören nicht in den Newsletter
+
+## BMS-Terminologie (verpflichtend — IMMER beachten)
+- "Lerngruppe" statt "Klasse"
+- "Lernbegleiter:in" / "Lernbegleitung" statt "Lehrer:in" / "Lehrkraft"
+- "Stufe 1–3" statt "Klasse 1–3"
+Diese Begriffe sind identitätsstiftend und dürfen nie verwechselt werden.
+
+## Neue Themen einführen (Why–How–What)
+Wenn ein Thema zum ersten Mal im Newsletter auftaucht (z.B. Schulsozialarbeit,
+neues Programm), kurz den Kontext setzen:
+1. Warum gibt es das? (Anlass, Hintergrund)
+2. Wie funktioniert es? (Ansatz — knapp)
+3. Was bedeutet das für Familien?
+Nicht sklavisch, aber das Prinzip beachten. Nie unvermittelt einführen.
+
+## Veranstaltungen
+Bei Events und Terminen IMMER: Ort, Uhrzeit, ggf. Raum nennen.
+Wenn eine Info fehlt, als Lücke markieren: "[Ort/Uhrzeit prüfen]"
+Eltern sollen zum Handeln angeregt werden: Termin eintragen, anmelden, hingehen.
+
+## Terminliste
+In der Terminliste kurze Aktionshinweise für Eltern wo relevant:
+z.B. "Anmeldung erforderlich", "Anwesenheit bis x Uhr verpflichtend"
+
+## Erste Ausgabe
+Wenn dies die erste Ausgabe eines neuen Newsletter-Formats ist, in der Begrüßung
+kurz den Kontext setzen: Was ist das? Warum gibt es das jetzt?
+
 - Output NUR den Newsletter-Text — keine Meta-Kommentare
 """
 
 
 def build_user_message(research: str, learnings: str, voice: str,
-                       redteam_feedback: str = "") -> str:
+                       redteam_feedback: str = "",
+                       school_context: str = "") -> str:
     today = datetime.now().strftime("%A, %d. %B %Y")
     redteam_section = (
         f"\n        ## Red Team Feedback (bitte jeden Punkt adressieren)\n        {redteam_feedback}"
@@ -120,6 +151,9 @@ def build_user_message(research: str, learnings: str, voice: str,
 
         ## Voice & Style Guide
         {voice or "_Kein Style Guide vorhanden._"}
+
+        ## Schulkontext (BMS-spezifisches Wissen)
+        {school_context or "_Kein Schulkontext vorhanden._"}
 
         ## Feedback aus vergangenen Newslettern
         {learnings or "_Noch keins._"}
@@ -180,9 +214,10 @@ def run(client: anthropic.Anthropic | None = None,
 
     print("✍️  Newsletter Writer startet...")
 
-    research  = read_file(RESEARCH_NOTES_FILE)
-    learnings = read_file(LEARNINGS_FILE)
-    voice     = read_file(VOICE_FILE)
+    research       = read_file(RESEARCH_NOTES_FILE)
+    learnings      = read_file(LEARNINGS_FILE)
+    voice          = read_file(VOICE_FILE)
+    school_context = read_file(SCHOOL_CONTEXT_FILE)
 
     if not research.strip() or "_Noch keine Recherche._" in research:
         print("  ⚠️  Keine Recherche-Notizen gefunden. Zuerst Scanning Agent starten.")
@@ -191,10 +226,11 @@ def run(client: anthropic.Anthropic | None = None,
     print("\n  Schreibe Newsletter mit Claude...\n")
     print("-" * 60)
 
-    user_message = build_user_message(research, learnings, voice, redteam_feedback)
+    user_message = build_user_message(research, learnings, voice, redteam_feedback,
+                                      school_context)
     newsletter = stream_claude(
         client, model=MODEL, system=SYSTEM_PROMPT,
-        user_message=user_message, max_tokens=2500,
+        user_message=user_message, max_tokens=4000,
     )
     print("-" * 60 + "\n")
 

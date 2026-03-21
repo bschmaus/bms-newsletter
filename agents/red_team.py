@@ -34,6 +34,7 @@ from config import (
     RESEARCH_NOTES_FILE,
     LEARNINGS_FILE,
     VOICE_FILE,
+    SCHOOL_CONTEXT_FILE,
     REDTEAM_NOTES_FILE,
     read_file,
     ensure_data_dir,
@@ -78,9 +79,14 @@ Der Newsletter soll diese vier Eindrücke hinterlassen (in dieser Priorität):
 
 ## Prüfung 3 — Sprache & Ton
 - Sprachliches Niveau: Chrismon oder brand eins — anspruchsvoll, persönlich, warm?
+- Kein akademischer Jargon: Wörter wie "Desiderat", "Paradigma", "Diskurs" SOFORT beanstanden.
+  Gehobene Alltagssprache, kein Uni-Deutsch.
 - SOFORT beanstanden: "war einiges los", "lässt uns nicht los", "spannende Zeiten",
   "es bleibt spannend" und vergleichbare Phrasen. Das ist zu platt.
 - Keine Emojis — SOFORT beanstanden wenn vorhanden.
+- **BMS-Terminologie:** SOFORT beanstanden wenn "Klasse" statt "Lerngruppe",
+  "Lehrer/Lehrkraft" statt "Lernbegleiter:in", oder "Klasse X" statt "Stufe X"
+  verwendet wird. Das sind identitätsstiftende Begriffe der BMS.
 - Wird pädagogisch argumentiert statt nur organisatorisch berichtet?
   (Nicht: "Bus macht Ausflüge einfacher" sondern: "Bus ermöglicht außerschulische
   Lernorte und steigert Selbständigkeit der Lerngruppen")
@@ -89,6 +95,9 @@ Der Newsletter soll diese vier Eindrücke hinterlassen (in dieser Priorität):
 - Passt das Montessori-Zitat wirklich zum Thema — oder wirkt es erzwungen?
 - Sind sinnvolle Links zu Quellen und BMS-Artikeln vorhanden?
 - Wird die BMS reflektiert positioniert — weder neutral noch missionierend?
+- **Neue Themen:** Werden neue Themen (z.B. Schulsozialarbeit) mit ausreichend
+  Kontext eingeführt? (Warum gibt es das? Wie funktioniert es? Was bedeutet es?)
+  Oder werden sie unvermittelt erwähnt, als wüssten alle schon Bescheid?
 
 ## Prüfung 4 — Leser-Perspektive
 Lies als Elternteil/Mitarbeiter:in, das/die 5 Minuten hat:
@@ -99,6 +108,10 @@ Lies als Elternteil/Mitarbeiter:in, das/die 5 Minuten hat:
 - Ist die Länge dem Inhalt angemessen (kein Aufblähen, kein unnötiges Kürzen)?
 - Wird durchgehend die Sie-Form verwendet?
 - Sind die Termine korrekt aufgelistet?
+- Enthalten Veranstaltungen konkrete Angaben (Ort, Uhrzeit, Raum)?
+  Fehlen diese, beanstanden.
+- Enthalten Termine wo nötig Aktionshinweise für Eltern
+  (Anmeldung, Anwesenheitspflicht etc.)?
 
 ## Ausgabeformat
 Nutze GENAU diese Struktur:

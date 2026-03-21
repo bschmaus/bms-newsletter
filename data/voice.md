@@ -57,6 +57,10 @@ die Montessori-Welt und bildungspolitische Entwicklungen interessieren.
   wo das nicht funktioniert, Doppelform verwenden (z.B. "Schüler:innen").
   Kein Genitiv-S auf Doppelformen ("der Schüler:innen Arbeit" → "die Arbeit der
   Lernenden").
+- **Sprachniveau:** Gehobene Alltagssprache, kein akademischer Jargon. Wenn ein
+  Wort in brand eins nicht stehen würde, ist es zu speziell. Beispiele für zu
+  akademische Wörter: "Desiderat", "Paradigma", "Diskurs" (im akademischen Sinne).
+  Lieber klar und direkt formulieren.
 - Klare, durchdachte Sätze. Kein Behördendeutsch, aber auch kein Plauderton.
 - Montessori-Sprache gezielt und natürlich einsetzen:
   vorbereitete Umgebung, Lernbegleiter:innen, kosmische Erziehung,
@@ -105,10 +109,42 @@ Namen und Fotos nur wenn eine Einwilligung bekannt ist. Im Zweifel weglassen.
 - Bei externen Themen (Studien, Bildungspolitik) nicht nur erwähnen, sondern
   erläutern, wie die BMS konkret damit umgeht.
 
+## BMS-Terminologie (verpflichtend)
+Wir verwenden ausschließlich die BMS-eigenen Begriffe:
+
+| Richtig (immer verwenden) | Falsch (nie verwenden) |
+|---|---|
+| Lerngruppe | Klasse |
+| Lernbegleiter:in / Lernbegleitung | Lehrer:in, Lehrkraft, Lehrkräfte |
+| Stufe 1–3, Stufe 4–6, Stufe 7–10 | Klasse 1–3 etc. |
+
+## Neue Themen einführen (Why–How–What)
+Wenn ein Thema zum ersten Mal im Newsletter erscheint (z.B. Schulsozialarbeit,
+neues Programm, neue Kooperation), immer kurz einführen:
+1. **Warum** gibt es das? (Kontext, Anlass)
+2. **Wie** funktioniert es? (Ansatz, Umsetzung — knapp)
+3. **Was** bedeutet das konkret? (für Familien, Lernende)
+Nicht sklavisch, aber das Prinzip beachten. Nie ein neues Thema unvermittelt
+in den Text werfen, als wüssten alle schon Bescheid.
+
+## Veranstaltungen & Termine
+- Bei Events immer: **Ort, Uhrzeit, Raum** nennen (z.B. "in der Mensa, 19:30 Uhr")
+- Wenn Info fehlt, als Lücke markieren statt weglassen: "[Ort/Uhrzeit prüfen]"
+- In der Terminliste kurze Aktionshinweise für Eltern wo relevant:
+  z.B. "Anmeldung erforderlich", "Anwesenheit bis x Uhr verpflichtend",
+  "Kinder bringen mit: ..."
+- Eltern sollen zum Handeln angeregt werden: Termin eintragen, anmelden, hingehen
+
+## Erste Ausgabe eines neuen Formats
+Wenn dies die erste Ausgabe eines neuen Newsletter-Formats ist, in der Begrüßung
+kurz den Kontext setzen: Was ist das hier? Warum gibt es das jetzt? Es gibt
+bereits BMS-Newsletter, aber nicht in dieser strukturierten Form.
+
 ## Was wir vermeiden
 - Bürokratische Sprache ("hiermit teilen wir mit...")
 - Übertriebenes Marketing ("einzigartige Bildungserfahrung!")
 - Floskeln und Phrasen (s.o.)
+- Akademischer Jargon ("Desiderat", "Paradigma", "Diskurs")
 - Negative Darstellung anderer Schulformen
 - Oberflächliche Berichterstattung ohne pädagogischen Tiefgang
 - Distanzierte, kühle Sprache — trotz Sie-Form immer nahbar bleiben
@@ -116,3 +152,4 @@ Namen und Fotos nur wenn eine Einwilligung bekannt ist. Im Zweifel weglassen.
 - Übergangssätze zwischen Sektionen
 - Erfundene oder paraphrasierte Zitate
 - Interne Schwierigkeiten oder Fehler der BMS
+- Falsche Terminologie: "Klasse" statt "Lerngruppe", "Lehrer" statt "Lernbegleiter"

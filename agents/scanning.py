@@ -174,6 +174,10 @@ Der Newsletter hat diese Sektionen:
 ## Sektion 4: "Nächste Termine an der BMS"
 - Liste alle Termine der kommenden 8 Wochen aus dem Terminkalender
 - Einfache Auflistung: Datum — Termin (ggf. kurze Ergänzung)
+- Bei Veranstaltungen immer Ort und Uhrzeit angeben wenn verfügbar
+- Wo relevant: kurzen Aktionshinweis für Eltern ergänzen
+  (z.B. "Anmeldung erforderlich", "Anwesenheit bis x Uhr verpflichtend",
+  "Kinder bringen mit: ...")
 
 ## Sektion 5: "Montessori-Zitat"
 - Schlage ein passendes Zitat von Maria Montessori (oder einer anderen
@@ -187,11 +191,14 @@ Der Newsletter hat diese Sektionen:
 - Englische Fachbegriffe (v.a. Montessori) sind in Ordnung — bilinguale Schule
 - Gendern: neutral wo möglich, sonst Doppelform (Schüler:innen)
 - Ton: anspruchsvoll, warm, persönlich — Niveau wie Chrismon oder brand eins
+- Kein akademischer Jargon — gehobene Alltagssprache
 - Keine Floskeln oder Phrasen ("war einiges los", "es bleibt spannend" etc.)
 - Keine Emojis
 - Vermeide Behördendeutsch und PR-Sprache
 - Bevorzuge konkrete Geschichten vor abstrakten Trends
 - Bildungswege (Ausbildung, Fachabi, Abitur) nur erwähnen wenn inhaltlich passend
+- **BMS-Terminologie:** Immer "Lerngruppe" (nie "Klasse"), immer "Lernbegleiter:in"
+  (nie "Lehrer:in" oder "Lehrkraft"), immer "Stufe" (nie "Klasse" im Stufenkontext)
 - Denke über einen möglichen ROTEN FADEN nach: gibt es ein Thema, das mehrere
   Sektionen verbindet? Notiere diesen Vorschlag am Anfang.
 - Integriere Feedback aus vergangenen Newslettern (Learnings)
