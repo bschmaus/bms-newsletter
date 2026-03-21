@@ -13,6 +13,7 @@ RESEARCH_NOTES_FILE  = DATA_DIR / "research_notes.md"
 VOICE_FILE           = DATA_DIR / "voice.md"
 REDTEAM_NOTES_FILE   = DATA_DIR / "redteam_notes.md"
 SCHOOL_CONTEXT_FILE  = DATA_DIR / "school_context.md"
+TOPICS_ARCHIVE       = DATA_DIR / "topics_archive.md"
 
 BROWSER_HEADERS = {
     "User-Agent": (
@@ -62,6 +63,7 @@ def ensure_data_dir() -> None:
         LEARNINGS_FILE:      "# Learnings & Verbesserungen\n\n_Noch keine Learnings._\n",
         NEWSLETTER_ARCHIVE:  "# Newsletter-Archiv\n\n_Noch keine Newsletter._\n",
         RESEARCH_NOTES_FILE: "# Recherche-Notizen\n\n_Noch keine Recherche._\n",
+        TOPICS_ARCHIVE:      "# Themen-Archiv — BMS Newsletter\n\n| Datum | Betreff | Roter Faden | Themen (kurz) |\n|---|---|---|---|\n",
     }
     for path, content in defaults.items():
         if not path.exists():

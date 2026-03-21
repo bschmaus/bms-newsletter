@@ -7,7 +7,7 @@ Pulls content from three source categories:
   3. Bildungspolitik — policy news (Schulbarometer, PISA, KMK, BM RLP, WEF, UN)
 
 Reads  : data/learnings.md           (feedback from past newsletters)
-         data/newsletter_archive.md  (history — avoid repeating topics)
+         data/topics_archive.md      (versioned topic history — avoid repeating topics)
 Writes : data/research_notes.md      (structured content for the Writer)
 
 Run standalone:
@@ -32,7 +32,7 @@ from config import (
     RSS_FEEDS_BILDUNG,
     EXTRA_BILDUNG_SOURCES,
     LEARNINGS_FILE,
-    NEWSLETTER_ARCHIVE,
+    TOPICS_ARCHIVE,
     RESEARCH_NOTES_FILE,
     BROWSER_HEADERS,
     read_file,
@@ -210,7 +210,7 @@ Der Newsletter hat diese Sektionen:
 
 def build_user_message(bms_news: str, bms_termine: str,
                        montessori_content: str, bildung_content: str,
-                       learnings: str, archive: str) -> str:
+                       learnings: str, topics_archive: str) -> str:
     today = datetime.now().strftime("%A, %d. %B %Y")
     return textwrap.dedent(f"""
         Heute ist {today}.
@@ -218,8 +218,8 @@ def build_user_message(bms_news: str, bms_termine: str,
         ## Vergangene Learnings & Feedback
         {learnings or "_Noch keine._"}
 
-        ## Bisherige Newsletter (Themen nicht wiederholen)
-        {archive or "_Noch kein Archiv._"}
+        ## Bisherige Newsletter-Themen (nicht wiederholen)
+        {topics_archive or "_Noch kein Archiv._"}
 
         ## BMS-Website: Schulnews
         {bms_news or "_Keine BMS-News gefunden._"}
@@ -279,8 +279,8 @@ def run(client: anthropic.Anthropic | None = None) -> str:
 
     print("🔍 Scanning Agent startet...")
 
-    learnings = read_file(LEARNINGS_FILE)
-    archive   = read_file(NEWSLETTER_ARCHIVE)
+    learnings      = read_file(LEARNINGS_FILE)
+    topics_archive = read_file(TOPICS_ARCHIVE)
 
     print("\n  Inhalte abrufen...")
     bms_news, bms_termine, montessori_content, bildung_content = fetch_all_content()
@@ -291,7 +291,7 @@ def run(client: anthropic.Anthropic | None = None) -> str:
     print("\n  Analysiere mit Claude...\n")
     user_message = build_user_message(
         bms_news, bms_termine, montessori_content, bildung_content,
-        learnings, archive,
+        learnings, topics_archive,
     )
 
     research_output = stream_claude(

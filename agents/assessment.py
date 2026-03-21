@@ -7,6 +7,7 @@ Reads  : data/newsletter_archive.md  (the finished newsletter)
          data/research_notes.md      (the research it was based on)
          data/learnings.md           (existing learnings)
 Writes : data/learnings.md           (appends new learnings)
+         data/topics_archive.md      (appends one-line topic summary)
 
 Run standalone:
     python -m agents.assessment
@@ -26,6 +27,7 @@ from config import (
     NEWSLETTER_ARCHIVE,
     RESEARCH_NOTES_FILE,
     LEARNINGS_FILE,
+    TOPICS_ARCHIVE,
     read_file,
     ensure_data_dir,
 )
@@ -35,6 +37,15 @@ from agents.utils import extract_latest_newsletter, stream_claude
 # ---------------------------------------------------------------------------
 # Prompts
 # ---------------------------------------------------------------------------
+
+TOPICS_PROMPT = """Lies den folgenden Newsletter und extrahiere in EINER Zeile (Markdown-Tabellenzeile):
+- Betreff (aus der Betreff-Zeile)
+- Roter Faden (1 kurzer Satz)
+- Themen, kurz kommagetrennt (Ereignisse, Studien, Personen, Konzepte)
+
+Antworte NUR mit der Tabellenzeile, ohne Kopfzeile, exakt in diesem Format:
+| YYYY-MM-DD | Betreff | Roter Faden | Thema1, Thema2, Thema3 |"""
+
 
 SYSTEM_PROMPT = """Du bist ein erfahrener Newsletter-Redakteur, der den BMS-Newsletter
 einer Montessori-Schule bewertet. Dein Ziel: konkrete, umsetzbare Tipps,
@@ -117,6 +128,18 @@ def run(client: anthropic.Anthropic | None = None) -> str:
 
     LEARNINGS_FILE.write_text(updated, encoding="utf-8")
     print(f"  ✅ Learnings aktualisiert: {LEARNINGS_FILE}")
+
+    # --- Append one-line summary to topics_archive.md ---
+    topics_row = stream_claude(
+        client, model=MODEL, system=TOPICS_PROMPT,
+        user_message=newsletter, max_tokens=200,
+    )
+    topics_row = topics_row.strip()
+    if topics_row.startswith("|"):
+        current_topics = read_file(TOPICS_ARCHIVE)
+        TOPICS_ARCHIVE.write_text(current_topics.rstrip() + "\n" + topics_row + "\n",
+                                  encoding="utf-8")
+        print(f"  ✅ Themen-Archiv aktualisiert: {TOPICS_ARCHIVE}")
 
     return assessment_body
 
