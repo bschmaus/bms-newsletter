@@ -35,7 +35,7 @@ Es wird über Zeit gefüllt und ergänzt._
 ### Sekundarstufe (Stufe 7–10)
 - Ca. 130 Lernende
 - Ebenfalls jahrgangsgemischt
-- 4 **Adolescent Communities**
+- 4 **Adolescent Communities**, jahrgangsgemischte Lerngrupen der Stufen 7 bis 10
 - Team-Teaching mit dedizierten Lernbegleiter:innen
 - Fachräume: Musik, Kunst, Werken, Chemie, Biologie, Physik, Computerraum, Lehrküche
 
