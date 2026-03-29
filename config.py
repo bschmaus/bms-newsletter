@@ -14,6 +14,7 @@ VOICE_FILE           = DATA_DIR / "voice.md"
 REDTEAM_NOTES_FILE   = DATA_DIR / "redteam_notes.md"
 SCHOOL_CONTEXT_FILE  = DATA_DIR / "school_context.md"
 TOPICS_ARCHIVE       = DATA_DIR / "topics_archive.md"
+NEWSLETTER_HTML      = DATA_DIR / "newsletter.html"
 
 BROWSER_HEADERS = {
     "User-Agent": (

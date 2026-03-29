@@ -1,6 +1,6 @@
 # BMS Newsletter
 
-Automatisierte Newsletter-Generierung für die **Bilinguale Montessori Schule (BMS) Ingelheim** — eine 4-Agenten-Pipeline, die aus aktuellen Quellen einen redaktionell hochwertigen Newsletter erstellt.
+Automatisierte Newsletter-Generierung für die **Bilinguale Montessori Schule (BMS) Ingelheim** — eine 5-Agenten-Pipeline, die aus aktuellen Quellen einen redaktionell hochwertigen Newsletter erstellt und als HTML-Email formatiert.
 
 ## Pipeline-Architektur
 
@@ -22,6 +22,7 @@ flowchart TD
         WRITE --> RED
         RED -->|"ÜBERARBEITEN\n(max 2×)"| WRITE
         RED -->|"FREIGEGEBEN"| ASSESS
+        ASSESS --> HTML["5. HTML Formatter\nEmail-Layout erstellen"]
     end
 
     subgraph Data["Dateien (data/)"]
@@ -29,6 +30,7 @@ flowchart TD
         NA["newsletter_archive.md\n(fertiger Entwurf)"]
         RTN["redteam_notes.md\n(Prüfnotizen)"]
         LRN["learnings.md\n(Feedback-Archiv)"]
+        NHTML["newsletter.html\n(Email-Layout)"]
     end
 
     subgraph Config["Konfiguration"]
@@ -43,6 +45,8 @@ flowchart TD
     WRITE --> NA
     RED --> RTN
     ASSESS --> LRN
+    HTML --> NHTML
+    NA -.->|"liest"| HTML
 
     VOICE -.->|"liest"| WRITE
     VOICE -.->|"liest"| RED
@@ -52,13 +56,14 @@ flowchart TD
     LRN -.->|"liest"| SCAN
     RTN -.->|"bei Überarbeitung"| WRITE
 
-    NA -->|"manuell"| EMAIL["In Email kopieren\n& versenden"]
+    NHTML -->|"copy-paste"| EMAIL["In Outlook einfügen\n& versenden"]
 
     style SCAN fill:#4a9eff,color:#fff
     style WRITE fill:#10b981,color:#fff
     style RED fill:#ef4444,color:#fff
     style ASSESS fill:#f59e0b,color:#fff
-    style EMAIL fill:#8b5cf6,color:#fff
+    style HTML fill:#8b5cf6,color:#fff
+    style EMAIL fill:#6b7280,color:#fff
 ```
 
 ## Agenten im Detail
@@ -69,6 +74,7 @@ flowchart TD
 | **Newsletter Writer** | Erstellt den Newsletter-Entwurf nach `voice.md`-Vorgaben. Beachtet Terminologie, Tonalität und Struktur. | `research_notes.md`, `voice.md`, `school_context.md`, `learnings.md` | `newsletter_archive.md` |
 | **Red Team** | Prüft in 4 Dimensionen: Fakten & Quellen, Roter Faden & Struktur, Sprache & Ton, Leser-Perspektive. Kann bis zu 2× zur Überarbeitung zurückschicken. | `newsletter_archive.md`, `research_notes.md`, `voice.md` | `redteam_notes.md` + Urteil |
 | **Assessment** | Reflektiert die fertige Ausgabe: Was hat funktioniert? Was nicht? Extrahiert konkrete Anweisungen für zukünftige Ausgaben. | `newsletter_archive.md`, `research_notes.md` | `learnings.md` (append) |
+| **HTML Formatter** | Konvertiert den fertigen Newsletter in ein gestyltes HTML-Email-Layout (BMS-Farben, Pull-Quotes, Termine-Box). Copy-paste-ready für Outlook. | `newsletter_archive.md` | `newsletter.html` |
 
 ## Setup
 
@@ -80,19 +86,19 @@ cp .env.example .env  # ANTHROPIC_API_KEY eintragen
 ## Nutzung
 
 ```bash
-# Volle Pipeline (alle 4 Agenten)
+# Volle Pipeline (alle 5 Agenten)
 python orchestrator.py
 
 # Ab einem bestimmten Agenten neu starten
 python orchestrator.py --from write    # Ab Newsletter Writer
-python orchestrator.py --from redteam  # Ab Red Team
+python orchestrator.py --from html     # Nur HTML neu generieren
 
 # Nur einen einzelnen Agenten ausführen
 python orchestrator.py --only scan     # Nur Scanning
-python orchestrator.py --only assess   # Nur Assessment
+python orchestrator.py --only html     # Nur HTML Formatter
 ```
 
-Verfügbare Agent-Namen: `scan`, `write`, `redteam`, `assess`
+Verfügbare Agent-Namen: `scan`, `write`, `redteam`, `assess`, `html`
 
 ## Dateistruktur
 
@@ -105,6 +111,7 @@ bms-newsletter/
 │   ├── newsletter_writer.py   # Newsletter-Entwurf
 │   ├── red_team.py            # Qualitätsprüfung (max 2 Iterationen)
 │   ├── assessment.py          # Learnings-Extraktion
+│   ├── html_formatter.py      # Markdown → HTML-Email-Layout
 │   └── utils.py               # Shared: Claude-Streaming, HTTP-Requests
 └── data/
     ├── voice.md               # Stimme & Stil (versioniert)
@@ -112,7 +119,8 @@ bms-newsletter/
     ├── learnings.md           # Akkumuliertes Feedback (lokal)
     ├── research_notes.md      # Recherche-Ergebnis (lokal)
     ├── newsletter_archive.md  # Fertiger Entwurf (lokal)
-    └── redteam_notes.md       # Red-Team-Notizen (lokal)
+    ├── redteam_notes.md       # Red-Team-Notizen (lokal)
+    └── newsletter.html        # HTML-Email-Layout (lokal)
 ```
 
 **Versioniert** = in Git. **Lokal** = in `.gitignore`, wird bei jedem Lauf neu erzeugt.
@@ -130,6 +138,6 @@ Die Pipeline folgt dem **[Voice & Style Guide](data/voice.md)** — die wichtigs
 
 ## Manueller Schritt nach der Pipeline
 
-1. Entwurf prüfen: `data/newsletter_archive.md`
+1. HTML prüfen: `data/newsletter.html` im Browser öffnen
 2. Redaktionelle Lücken schließen (z.B. `[Raum prüfen]`-Markierungen)
-3. In Email kopieren und versenden
+3. HTML in Outlook einfügen und versenden

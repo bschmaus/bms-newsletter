@@ -7,19 +7,20 @@ Automated newsletter generation for the Bilinguale Montessori Schule Ingelheim.
   2. Writer         — compose the newsletter draft
   3. Red Team       — quality & tone check for parents
   4. Assessment     — learn from the edition for next time
+  5. HTML Formatter — convert newsletter to styled HTML email
 
 Human steps (outside this pipeline):
-  • Review the draft in data/newsletter_archive.md
-  • Copy into email and send manually
+  • Review the HTML in data/newsletter.html
+  • Copy-paste into Outlook and send
 
 Usage:
     python orchestrator.py                     # full pipeline
     python orchestrator.py --from scan         # restart from scanning
     python orchestrator.py --from write        # restart from writer
-    python orchestrator.py --only write        # re-run writer only
+    python orchestrator.py --only html         # re-run HTML formatter only
     python orchestrator.py --only assess       # re-run assessment only
 
-Available agent names: scan, write, redteam, assess
+Available agent names: scan, write, redteam, assess, html
 """
 
 import argparse
@@ -32,13 +33,14 @@ import anthropic
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from agents import scanning, newsletter_writer, red_team, assessment
+from agents import scanning, newsletter_writer, red_team, assessment, html_formatter
 
 AGENTS = [
     ("scan",     "Scanning",           scanning.run),
     ("write",    "Newsletter Writer",  newsletter_writer.run),
     ("redteam",  "Red Team",           red_team.run),
     ("assess",   "Assessment",         assessment.run),
+    ("html",     "HTML Formatter",     html_formatter.run),
 ]
 
 AGENT_NAMES = [name for name, _, _ in AGENTS]
@@ -105,10 +107,10 @@ def run_pipeline(start_from: str | None = None, only: str | None = None) -> None
 
     elapsed = time.time() - total_start
     banner(f"🎉 Pipeline fertig! Gesamtzeit: {elapsed:.0f}s")
-    _notify("BMS Newsletter ✍️", "Newsletter-Entwurf ist fertig — prüfen und versenden.")
+    _notify("BMS Newsletter ✍️", "Newsletter ist fertig — HTML prüfen und versenden.")
     print("  Nächste Schritte:")
-    print("  1. Prüfen  : data/newsletter_archive.md")
-    print("  2. In Email kopieren und versenden")
+    print("  1. Prüfen  : data/newsletter.html (im Browser öffnen)")
+    print("  2. HTML in Outlook einfügen und versenden")
     print()
 
 
