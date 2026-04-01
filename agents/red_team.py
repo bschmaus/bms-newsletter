@@ -67,6 +67,19 @@ Der Newsletter soll diese vier Eindrücke hinterlassen (in dieser Priorität):
 - Werden keine Behauptungen aufgestellt, die nicht belegt sind?
 - Werden Zitate (Eltern, Schüler:innen, Lehrende) wörtlich aus der Quelle übernommen?
   Erfundene oder paraphrasierte Zitate SOFORT beanstanden.
+- JEDE faktische Behauptung (Datum, Zahl, Name, Ort) muss im Recherche-Material
+  nachweisbar sein. Wenn nicht nachweisbar: SOFORT beanstanden.
+- Veröffentlichungsdaten dürfen NICHT als Veranstaltungen dargestellt werden.
+  Prüfe bei jedem genannten Datum: Ist das ein Publikationsdatum oder ein Event?
+- Redaktionelle Einordnung ist erlaubt, aber NUR auf Basis validierter Fakten.
+  Erlaubt: "Das zeigt, wie wichtig..." (Meinung über belegten Fakt)
+  Verboten: "Ela Eckert wird am 15. März sprechen" (wenn nicht in Quelle)
+- Personen-Check bei jeder erwähnten Person:
+  1. Kommt der Name im Recherche-Material vor?
+  2. Stimmt der Kontext (Rolle, Tätigkeit)?
+  3. Wird der Person etwas zugeschrieben, das die Quelle nicht belegt?
+  Wenn ein Artikel ÜBER eine Person berichtet, heißt das NICHT automatisch,
+  dass diese Person an einer Veranstaltung teilnimmt oder einen Vortrag hält.
 
 ## Prüfung 2 — Roter Faden & Struktur
 - Gibt es ein verbindendes Thema, das sich durch den Newsletter zieht?

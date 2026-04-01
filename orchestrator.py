@@ -4,10 +4,11 @@ BMS Newsletter Pipeline
 Automated newsletter generation for the Bilinguale Montessori Schule Ingelheim.
 
   1. Scanning       — scrape BMS website + Montessori sources
-  2. Writer         — compose the newsletter draft
+  2. Writer         — compose the newsletter draft (German)
   3. Red Team       — quality & tone check for parents
   4. Assessment     — learn from the edition for next time
-  5. HTML Formatter — convert newsletter to styled HTML email
+  5. Translator     — translate newsletter to English
+  6. HTML Formatter — convert bilingual newsletter to styled HTML email
 
 Human steps (outside this pipeline):
   • Review the HTML in data/newsletter.html
@@ -20,7 +21,7 @@ Usage:
     python orchestrator.py --only html         # re-run HTML formatter only
     python orchestrator.py --only assess       # re-run assessment only
 
-Available agent names: scan, write, redteam, assess, html
+Available agent names: scan, write, redteam, assess, translate, html
 """
 
 import argparse
@@ -33,14 +34,16 @@ import anthropic
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from agents import scanning, newsletter_writer, red_team, assessment, html_formatter
+from agents import scanning, newsletter_writer, red_team, assessment, translator, html_formatter
+from config import CONTENT_POOL_FILE
 
 AGENTS = [
-    ("scan",     "Scanning",           scanning.run),
-    ("write",    "Newsletter Writer",  newsletter_writer.run),
-    ("redteam",  "Red Team",           red_team.run),
-    ("assess",   "Assessment",         assessment.run),
-    ("html",     "HTML Formatter",     html_formatter.run),
+    ("scan",      "Scanning",           scanning.run),
+    ("write",     "Newsletter Writer",  newsletter_writer.run),
+    ("redteam",   "Red Team",           red_team.run),
+    ("assess",    "Assessment",         assessment.run),
+    ("translate", "Translator",         translator.run),
+    ("html",      "HTML Formatter",     html_formatter.run),
 ]
 
 AGENT_NAMES = [name for name, _, _ in AGENTS]
@@ -104,6 +107,14 @@ def run_pipeline(start_from: str | None = None, only: str | None = None) -> None
             print(f"     Fortsetzen mit: python orchestrator.py --from {name}")
             sys.exit(1)
         print(f"\n  ✅ {label} fertig ({time.time() - t0:.1f}s)")
+
+    # Auto-reset content pool after full pipeline run
+    if CONTENT_POOL_FILE.exists() and CONTENT_POOL_FILE.read_text(encoding="utf-8").strip():
+        CONTENT_POOL_FILE.write_text(
+            "# Content Pool — BMS Newsletter\n\n_Noch kein Content._\n",
+            encoding="utf-8",
+        )
+        print("  🗑️  Content Pool geleert (wurde in Newsletter verarbeitet)")
 
     elapsed = time.time() - total_start
     banner(f"🎉 Pipeline fertig! Gesamtzeit: {elapsed:.0f}s")

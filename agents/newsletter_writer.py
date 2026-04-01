@@ -79,7 +79,7 @@ hinterlassen (in dieser Priorität):
 Keine Übergangssätze zwischen Sektionen. Die Überschriften tragen die Struktur.
 
 ## Roter Faden
-Der Newsletter erscheint nur monatlich. Versuche, die Themen inhaltlich zu verbinden.
+Der Newsletter erscheint alle 8 Wochen. Versuche, die Themen inhaltlich zu verbinden.
 Die Begrüßung benennt das verbindende Thema. Die Sektionen greifen es auf.
 Beispiel: Wenn das Schulbarometer zeigt, dass Kinder Mitbestimmung wollen, und die BMS
 gerade den Erdkinderplan thematisiert — das ist derselbe Gedanke.
@@ -106,6 +106,11 @@ gerade den Erdkinderplan thematisiert — das ist derselbe Gedanke.
 - Zitate von Eltern/Schüler:innen/Lernbegleiter:innen nur wenn wirklich in der Quelle —
   nie erfinden, nie paraphrasieren
 - Interne Schwierigkeiten oder Fehler der BMS gehören nicht in den Newsletter
+- FAKTEN-REGEL: Verwende NUR Fakten (Daten, Namen, Zahlen, Orte), die im
+  Recherche-Material explizit vorkommen. Keine eigenen Annahmen, keine Erfindungen.
+  Veröffentlichungsdaten von Artikeln sind KEINE Veranstaltungstermine.
+  Wenn ein Artikel über eine Person berichtet, heißt das nicht, dass diese
+  Person an einer Veranstaltung teilnimmt.
 
 ## BMS-Terminologie (verpflichtend — IMMER beachten)
 - "Lerngruppe" statt "Klasse"

@@ -34,11 +34,12 @@ from config import (
     LEARNINGS_FILE,
     TOPICS_ARCHIVE,
     RESEARCH_NOTES_FILE,
+    CONTENT_POOL_FILE,
     BROWSER_HEADERS,
     read_file,
     ensure_data_dir,
 )
-from agents.utils import strip_html, stream_claude
+from agents.utils import strip_html, extract_bms_articles, stream_claude
 
 # Scanning uses Sonnet to keep costs down
 MODEL = "claude-sonnet-4-6"
@@ -59,6 +60,40 @@ def fetch_page(url: str, max_chars: int = 8000) -> str:
     except Exception as exc:
         print(f"  ⚠️  Konnte {url} nicht abrufen: {exc}")
         return ""
+
+
+def fetch_bms_articles(url: str, max_chars: int = 8000) -> str:
+    """Fetch BMS news page and extract individual article links + text.
+
+    Returns markdown with article titles, URLs, and content snippets.
+    Falls back to plain text scraping if no article links are found.
+    """
+    try:
+        resp = requests.get(url, headers=BROWSER_HEADERS, timeout=15)
+        resp.raise_for_status()
+        raw_html = resp.text
+    except Exception as exc:
+        print(f"  ⚠️  Konnte {url} nicht abrufen: {exc}")
+        return ""
+
+    articles = extract_bms_articles(raw_html)
+    if not articles:
+        print("  ⚠️  Keine Artikel-Links gefunden — Fallback auf Plaintext")
+        return strip_html(raw_html)[:max_chars]
+
+    # Build markdown with article links preserved
+    plain_text = strip_html(raw_html)
+    sections = []
+    for art in articles:
+        sections.append(
+            f"**{art['title']}**\n"
+            f"URL: {art['url']}\n"
+        )
+    result = "### BMS News-Artikel (mit Links)\n\n" + "\n".join(sections)
+
+    # Append the full page text so Claude has context beyond just titles
+    result += f"\n\n### Volltext der Newsseite\n{plain_text[:max_chars]}"
+    return result
 
 
 def fetch_feed(url: str) -> list[dict]:
@@ -124,13 +159,19 @@ def fetch_all_content() -> tuple[str, str, str, str]:
     Returns (bms_news, bms_termine, montessori_content, bildung_content).
     """
     print(f"  🏫 BMS News: {BMS_NEWS_URL}")
-    bms_news = fetch_page(BMS_NEWS_URL)
+    bms_news = fetch_bms_articles(BMS_NEWS_URL)
 
     print(f"  📅 BMS Termine: {BMS_TERMINE_URL}")
     bms_termine = fetch_page(BMS_TERMINE_URL, max_chars=5000)
 
     montessori_content = _fetch_category("Montessori", [], EXTRA_MONTESSORI_SOURCES)
     bildung_content = _fetch_category("Bildung", RSS_FEEDS_BILDUNG, EXTRA_BILDUNG_SOURCES)
+
+    # Include pre-collected content pool if available
+    pool = read_file(CONTENT_POOL_FILE)
+    if pool.strip() and "_Noch kein Content._" not in pool:
+        print("  📦 Content Pool gefunden — wird einbezogen")
+        montessori_content += f"\n\n## Vorab gesammelte Inhalte (Content Pool)\n{pool[:6000]}"
 
     return bms_news, bms_termine, montessori_content, bildung_content
 
@@ -205,6 +246,17 @@ Der Newsletter hat diese Sektionen:
 - Vermeide Themen, die kürzlich schon im Newsletter waren
 - Zitate von Personen nur wenn wirklich in der Quelle belegt — nie erfinden
 - Output NUR strukturiertes Markdown — keine Einleitung, kein Kommentar
+
+## Fakten-Markierung (verpflichtend)
+- VERÖFFENTLICHUNGSDATUM vs. VERANSTALTUNG klar trennen:
+  - "[VERÖFFENTLICHT: TT.MM.JJJJ]" für Publikationsdaten von Artikeln/Beiträgen
+  - "[VERANSTALTUNG: TT.MM.JJJJ, Ort, Uhrzeit]" für echte Events mit Termin
+- Nie ein Veröffentlichungsdatum als Veranstaltungstermin darstellen
+- Wenn unklar ob Datum oder Event: "[DATUM UNKLAR — bitte prüfen]"
+- Personennamen: nur nennen wenn die Quelle sie explizit erwähnt.
+  Kontext der Erwähnung angeben (z.B. "Autorin des Artikels" vs. "Rednerin bei Veranstaltung")
+- Wenn ein Artikel ÜBER eine Person berichtet, heißt das NICHT, dass diese Person
+  an einer Veranstaltung teilnimmt oder spricht
 """
 
 
