@@ -173,8 +173,13 @@ def extract_bms_articles(html: str) -> list[dict]:
 # ---------------------------------------------------------------------------
 
 def stream_claude(client: anthropic.Anthropic, *, model: str, system: str,
-                  user_message: str, max_tokens: int = 3000) -> str:
-    """Stream a Claude response, printing tokens as they arrive. Returns full text."""
+                  user_message: str, max_tokens: int = 3000,
+                  emit=None) -> str:
+    """Stream a Claude response, printing tokens as they arrive. Returns full text.
+
+    emit: optional callable(str) — called for each token, used by web server
+          to forward tokens to SSE clients.
+    """
     collected: list[str] = []
     with client.messages.stream(
         model=model,
@@ -184,6 +189,8 @@ def stream_claude(client: anthropic.Anthropic, *, model: str, system: str,
     ) as stream:
         for text in stream.text_stream:
             print(text, end="", flush=True)
+            if emit is not None:
+                emit(text)
             collected.append(text)
     print("\n")
     return "".join(collected).strip()

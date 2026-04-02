@@ -88,8 +88,11 @@ def build_prompt(newsletter: str, research: str, existing_learnings: str) -> str
 # Agent
 # ---------------------------------------------------------------------------
 
-def run(client: anthropic.Anthropic | None = None) -> str:
-    """Run the assessment agent. Returns the new learnings as a string."""
+def run(client: anthropic.Anthropic | None = None, *, emit=None) -> str:
+    """Run the assessment agent. Returns the new learnings as a string.
+
+    emit: optional callable(str) forwarded to stream_claude for SSE streaming.
+    """
     ensure_data_dir()
 
     if client is None:
@@ -113,7 +116,7 @@ def run(client: anthropic.Anthropic | None = None) -> str:
     prompt = build_prompt(newsletter, research, existing)
     assessment_body = stream_claude(
         client, model=MODEL, system=SYSTEM_PROMPT,
-        user_message=prompt, max_tokens=2000,
+        user_message=prompt, max_tokens=2000, emit=emit,
     )
     print("-" * 60 + "\n")
 
@@ -132,7 +135,7 @@ def run(client: anthropic.Anthropic | None = None) -> str:
     # --- Append one-line summary to topics_archive.md ---
     topics_row = stream_claude(
         client, model=MODEL, system=TOPICS_PROMPT,
-        user_message=newsletter, max_tokens=200,
+        user_message=newsletter, max_tokens=200, emit=emit,
     )
     topics_row = topics_row.strip()
     if topics_row.startswith("|"):

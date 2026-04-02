@@ -76,8 +76,11 @@ def build_user_message(newsletter: str) -> str:
 # Agent
 # ---------------------------------------------------------------------------
 
-def run(client: anthropic.Anthropic | None = None) -> str:
-    """Run the translator agent. Returns the English newsletter text."""
+def run(client: anthropic.Anthropic | None = None, *, emit=None) -> str:
+    """Run the translator agent. Returns the English newsletter text.
+
+    emit: optional callable(str) forwarded to stream_claude for SSE streaming.
+    """
     ensure_data_dir()
 
     if client is None:
@@ -98,7 +101,7 @@ def run(client: anthropic.Anthropic | None = None) -> str:
     user_message = build_user_message(newsletter)
     english = stream_claude(
         client, model=MODEL, system=SYSTEM_PROMPT,
-        user_message=user_message, max_tokens=4000,
+        user_message=user_message, max_tokens=4000, emit=emit,
     )
     print("-" * 60 + "\n")
 

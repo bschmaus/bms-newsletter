@@ -225,8 +225,11 @@ def save_redteam_notes(subject: str, entries: list[dict]) -> None:
 # Agent
 # ---------------------------------------------------------------------------
 
-def run(client: anthropic.Anthropic | None = None) -> str:
-    """Run the Red Team agent. Returns the final newsletter text."""
+def run(client: anthropic.Anthropic | None = None, *, emit=None) -> str:
+    """Run the Red Team agent. Returns the final newsletter text.
+
+    emit: optional callable(str) forwarded to stream_claude for SSE streaming.
+    """
     ensure_data_dir()
 
     if client is None:
@@ -262,7 +265,7 @@ def run(client: anthropic.Anthropic | None = None) -> str:
 
         critique = stream_claude(
             client, model=MODEL, system=SYSTEM_PROMPT,
-            user_message=prompt, max_tokens=1500,
+            user_message=prompt, max_tokens=1500, emit=emit,
         )
         entries.append({"iteration": iteration, "critique": critique})
         save_redteam_notes(subject, entries)
@@ -282,7 +285,7 @@ def run(client: anthropic.Anthropic | None = None) -> str:
 
         print(f"\n  ↩️  ÜBERARBEITEN — Newsletter Writer wird neu gestartet...")
         from agents.newsletter_writer import run as write_newsletter
-        write_newsletter(client, redteam_feedback=revision_instructions, revision=True)
+        write_newsletter(client, redteam_feedback=revision_instructions, revision=True, emit=emit)
 
     print(f"\n  ✅ Red Team Notizen gespeichert: {REDTEAM_NOTES_FILE}")
     _, final = extract_latest_newsletter(read_file(NEWSLETTER_ARCHIVE))

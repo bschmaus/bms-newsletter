@@ -28,6 +28,10 @@ SMTP_PASSWORD  = os.getenv("SMTP_PASSWORD", "")
 SMTP_FROM      = os.getenv("SMTP_FROM", "")
 NOTIFY_EMAIL   = os.getenv("NOTIFY_EMAIL", "")
 
+# --- Web UI Auth (from .env) ---
+WEB_USER = os.getenv("WEB_USER", "bms")
+WEB_PASS = os.getenv("WEB_PASS", "")
+
 BROWSER_HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "

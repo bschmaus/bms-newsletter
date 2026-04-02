@@ -132,8 +132,11 @@ def build_prompt(newsletter: str, subject: str, design_guide: str,
 # Agent
 # ---------------------------------------------------------------------------
 
-def run(client: anthropic.Anthropic | None = None) -> str:
-    """Run the HTML formatter agent. Returns the path to the generated file."""
+def run(client: anthropic.Anthropic | None = None, *, emit=None) -> str:
+    """Run the HTML formatter agent. Returns the path to the generated file.
+
+    emit: optional callable(str) forwarded to stream_claude for SSE streaming.
+    """
     ensure_data_dir()
 
     if client is None:
@@ -164,7 +167,7 @@ def run(client: anthropic.Anthropic | None = None) -> str:
     prompt = build_prompt(newsletter, subject, design_guide, english)
     html = stream_claude(
         client, model=MODEL, system=SYSTEM_PROMPT,
-        user_message=prompt, max_tokens=32000,
+        user_message=prompt, max_tokens=32000, emit=emit,
     )
     print("-" * 60 + "\n")
 
