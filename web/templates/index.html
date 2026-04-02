@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BMS Newsletter</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: #f5f5f0;
+      color: #333;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      background: #2B5B84;
+      color: #fff;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .header h1 { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.02em; }
+    .header .subtitle { font-size: 0.8rem; opacity: 0.7; margin-top: 2px; }
+
+    /* Layout */
+    .container { max-width: 860px; margin: 0 auto; padding: 32px 20px; }
+
+    /* Cards */
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 28px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+    .card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #2B5B84;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e8ecf0;
+    }
+
+    /* Form elements */
+    label { display: block; font-size: 0.85rem; font-weight: 500; color: #555; margin-bottom: 5px; }
+    input[type="date"], textarea, input[type="text"] {
+      width: 100%;
+      border: 1px solid #d0d5db;
+      border-radius: 5px;
+      padding: 8px 10px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      background: #fafafa;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input[type="date"]:focus, textarea:focus { border-color: #2B5B84; background: #fff; }
+    textarea { resize: vertical; min-height: 70px; }
+    .form-row { margin-bottom: 16px; }
+    .hint { font-size: 0.78rem; color: #888; margin-top: 4px; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 18px; border: none; border-radius: 5px;
+      font-size: 0.9rem; font-weight: 500; cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn:hover { opacity: 0.88; }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: #2B5B84; color: #fff; }
+    .btn-secondary { background: #3A7CA5; color: #fff; }
+    .btn-success { background: #2a6b24; color: #fff; }
+    .btn-outline { background: #fff; color: #2B5B84; border: 1px solid #2B5B84; }
+    .btn-danger { background: #c0392b; color: #fff; }
+    .btn-sm { padding: 6px 12px; font-size: 0.82rem; }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+
+    /* Terminal output */
+    .terminal {
+      background: #1a1a2e;
+      color: #e0e0e0;
+      border-radius: 6px;
+      padding: 16px;
+      font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+      font-size: 0.78rem;
+      line-height: 1.6;
+      height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .terminal .t-scan      { color: #5bc4f5; }
+    .terminal .t-write     { color: #a8d8a8; }
+    .terminal .t-redteam   { color: #f5a5a5; }
+    .terminal .t-assess    { color: #f5d87a; }
+    .terminal .t-translate { color: #c5aff5; }
+    .terminal .t-html      { color: #aaaaaa; }
+    .terminal .t-system    { color: #888; font-style: italic; }
+
+    /* Phase badge */
+    .phase-badge {
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .phase-scanning  { background: #e3f0fb; color: #2B5B84; }
+    .phase-review    { background: #fff3cd; color: #856404; }
+    .phase-writing   { background: #d4edda; color: #155724; }
+    .phase-done      { background: #d1e7dd; color: #0a3622; }
+    .phase-error     { background: #f8d7da; color: #721c24; }
+
+    /* Review cards */
+    .topic-card {
+      border: 1px solid #e0e7ef;
+      border-radius: 6px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      transition: border-color 0.15s;
+    }
+    .topic-card.included  { border-left: 4px solid #2a6b24; }
+    .topic-card.excluded  { border-left: 4px solid #c0392b; opacity: 0.65; }
+    .topic-card-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+    .topic-section { font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: #3A7CA5; min-width: 120px; padding-top: 2px; }
+    .topic-title { font-size: 0.92rem; font-weight: 600; color: #222; flex: 1; }
+    .topic-summary { font-size: 0.82rem; color: #555; margin: 6px 0 8px 130px; line-height: 1.5; }
+    .topic-controls { display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
+    .toggle-btn {
+      padding: 4px 12px; border-radius: 4px; border: 1px solid #ccc;
+      font-size: 0.8rem; cursor: pointer; background: #f5f5f5;
+    }
+    .toggle-btn.active-include { background: #d4edda; border-color: #2a6b24; color: #155724; font-weight: 600; }
+    .toggle-btn.active-exclude { background: #f8d7da; border-color: #c0392b; color: #721c24; font-weight: 600; }
+    .topic-comment { flex: 1; min-width: 200px; padding: 5px 8px; font-size: 0.82rem;
+      border: 1px solid #d0d5db; border-radius: 4px; }
+
+    /* Preview */
+    #preview-frame {
+      width: 100%;
+      height: 600px;
+      border: 1px solid #e0e7ef;
+      border-radius: 6px;
+    }
+
+    /* Collector panel */
+    .collector-output {
+      background: #1a1a2e; color: #ccc;
+      border-radius: 6px; padding: 12px;
+      font-family: monospace; font-size: 0.78rem;
+      height: 150px; overflow-y: auto;
+      white-space: pre-wrap;
+      margin-top: 12px;
+      display: none;
+    }
+    .collector-output.active { display: block; }
+
+    /* Spinner */
+    .spinner {
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Utility */
+    .hidden { display: none !important; }
+    .mt-4 { margin-top: 16px; }
+    .alert { padding: 10px 14px; border-radius: 5px; font-size: 0.88rem; margin-bottom: 12px; }
+    .alert-warning { background: #fff3cd; color: #856404; border: 1px solid #ffc107; }
+    .alert-danger  { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>BMS Newsletter</h1>
+    <div class="subtitle">Bilinguale Montessori Schule Ingelheim</div>
+  </div>
+  <div style="margin-left:auto; display:flex; align-items:center; gap:10px;">
+    <span id="phase-badge" class="phase-badge hidden"></span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ======================================================= -->
+  <!-- STATE 1: IDLE — Form                                    -->
+  <!-- ======================================================= -->
+  <div id="state-idle">
+
+    <div class="card">
+      <h2>Newsletter erstellen</h2>
+
+      <div class="form-row">
+        <label for="scan_from">Scannen ab</label>
+        <input type="date" id="scan_from" value="{{ default_scan_from }}">
+        <p class="hint">Nur Inhalte ab diesem Datum werden berücksichtigt.</p>
+      </div>
+
+      <div class="form-row">
+        <label for="extra_urls">Zusätzliche Quellen (optional)</label>
+        <textarea id="extra_urls" placeholder="https://example.com/news&#10;https://andere-montessori-schule.de/aktuell" rows="3"></textarea>
+        <p class="hint">Eine URL pro Zeile — wird zusätzlich zu den konfigurierten Quellen gescrapt.</p>
+      </div>
+
+      <div class="form-row">
+        <label for="red_thread">Roter Faden / Hinweise an den Writer (optional)</label>
+        <textarea id="red_thread" placeholder="z.B. »Fokus auf Selbständigkeit und Eigenverantwortung. Den Bus-Artikel als zentrales Beispiel nutzen.«" rows="3"></textarea>
+        <p class="hint">Redaktionelle Direktive — wird direkt in den Writing Agent injiziert.</p>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="startPipeline()">
+          <span>🔍</span> Scanning starten
+        </button>
+      </div>
+    </div>
+
+    <!-- Collector -->
+    <div class="card">
+      <h2>Content Collector</h2>
+      <p style="font-size:0.88rem; color:#555; margin-bottom:12px;">
+        Sammelt Inhalte aus allen Quellen und speichert sie im Content Pool
+        für die nächste Newsletter-Erstellung.
+      </p>
+      <div id="collector-alert" class="hidden"></div>
+      <button class="btn btn-secondary btn-sm" onclick="startCollector()" id="collector-btn">
+        <span>📥</span> Jetzt sammeln
+      </button>
+      <div id="collector-output" class="collector-output"></div>
+    </div>
+
+  </div><!-- /state-idle -->
+
+
+  <!-- ======================================================= -->
+  <!-- STATE 2: SCANNING / WRITING — Live Stream               -->
+  <!-- ======================================================= -->
+  <div id="state-running" class="hidden">
+    <div class="card">
+      <h2 id="running-title">
+        <span class="spinner"></span>&nbsp; Pipeline läuft…
+      </h2>
+
+      <div style="font-size:0.8rem; color:#888; margin-bottom:10px;">
+        Legende:
+        <span class="t-scan" style="color:#5bc4f5">■ Scan</span> &nbsp;
+        <span class="t-write" style="color:#a8d8a8">■ Writer</span> &nbsp;
+        <span class="t-redteam" style="color:#f5a5a5">■ Red Team</span> &nbsp;
+        <span class="t-assess" style="color:#f5d87a">■ Assessment</span> &nbsp;
+        <span class="t-translate" style="color:#c5aff5">■ Übersetzer</span> &nbsp;
+        <span class="t-html" style="color:#aaa">■ HTML</span>
+      </div>
+
+      <div id="terminal" class="terminal"></div>
+    </div>
+  </div><!-- /state-running -->
+
+
+  <!-- ======================================================= -->
+  <!-- STATE 3: REVIEW                                         -->
+  <!-- ======================================================= -->
+  <div id="state-review" class="hidden">
+    <div class="card">
+      <h2>📋 Inhaltlicher Review</h2>
+      <p style="font-size:0.88rem; color:#555; margin-bottom:18px;">
+        Der Scan ist abgeschlossen. Bitte prüfe die vorgeschlagenen Themen und entscheide,
+        welche in den Newsletter aufgenommen werden sollen.
+      </p>
+
+      <div class="form-row">
+        <label for="review_red_thread">Roter Faden anpassen (optional)</label>
+        <input type="text" id="review_red_thread"
+               placeholder="z.B. »Vertrauen als pädagogische Grundhaltung«">
+      </div>
+
+      <div id="topic-cards"></div>
+
+      <div class="btn-row">
+        <button class="btn btn-success" onclick="submitReview()">
+          ✓ Writing starten
+        </button>
+        <button class="btn btn-outline btn-sm" onclick="toggleAllTopics(true)">
+          Alle einbeziehen
+        </button>
+        <button class="btn btn-outline btn-sm" onclick="toggleAllTopics(false)">
+          Alle abwählen
+        </button>
+      </div>
+    </div>
+  </div><!-- /state-review -->
+
+
+  <!-- ======================================================= -->
+  <!-- STATE 4: DONE — Preview                                 -->
+  <!-- ======================================================= -->
+  <div id="state-done" class="hidden">
+    <div class="card">
+      <h2>✅ Newsletter fertig</h2>
+
+      <div id="done-alert" class="alert alert-warning hidden">
+        Bitte prüfe den Inhalt sorgfältig vor dem Versand — insbesondere Daten, Namen und Fakten.
+      </div>
+
+      <div class="btn-row" style="margin-top:0; margin-bottom:16px;">
+        <button class="btn btn-primary" onclick="copyHtml()">📋 HTML kopieren</button>
+        <button class="btn btn-secondary" onclick="downloadHtml()">⬇ Als Datei speichern</button>
+        <button class="btn btn-outline" onclick="resetUI()">↩ Neue Ausgabe</button>
+      </div>
+
+      <iframe id="preview-frame" sandbox="allow-same-origin"></iframe>
+    </div>
+  </div><!-- /state-done -->
+
+</div><!-- /container -->
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// State
+// ─────────────────────────────────────────────────────────────
+let currentAgent  = "";
+let currentHtml   = "";
+let topicData     = [];
+let eventSource   = null;
+
+// ─────────────────────────────────────────────────────────────
+// UI helpers
+// ─────────────────────────────────────────────────────────────
+function show(id)  { document.getElementById(id).classList.remove("hidden"); }
+function hide(id)  { document.getElementById(id).classList.add("hidden"); }
+
+function showPhase(phase) {
+  const badge = document.getElementById("phase-badge");
+  const labels = {
+    scanning:  ["Scanning",  "phase-scanning"],
+    review:    ["Review",    "phase-review"],
+    writing:   ["Writing",   "phase-writing"],
+    done:      ["Fertig",    "phase-done"],
+    error:     ["Fehler",    "phase-error"],
+    idle:      ["",          ""],
+  };
+  const [label, cls] = labels[phase] || ["", ""];
+  badge.className = "phase-badge " + cls;
+  badge.textContent = label;
+  if (label) badge.classList.remove("hidden");
+  else badge.classList.add("hidden");
+}
+
+// ─────────────────────────────────────────────────────────────
+// Terminal output
+// ─────────────────────────────────────────────────────────────
+const AGENT_CLASSES = {
+  scan:      "t-scan",
+  write:     "t-write",
+  redteam:   "t-redteam",
+  assess:    "t-assess",
+  translate: "t-translate",
+  html:      "t-html",
+};
+
+function appendToTerminal(text) {
+  const terminal = document.getElementById("terminal");
+  // Detect agent prefix [agentname]
+  const prefixMatch = text.match(/^\[([a-z]+)\](.*)/s);
+  let cls  = AGENT_CLASSES[currentAgent] || "";
+  let body = text;
+
+  if (prefixMatch) {
+    const agentKey = prefixMatch[1];
+    body = prefixMatch[2];
+    if (AGENT_CLASSES[agentKey]) {
+      currentAgent = agentKey;
+      cls = AGENT_CLASSES[agentKey];
+    }
+  }
+
+  if (body === "") return;
+
+  // Append a span (or plain text if no agent)
+  if (cls) {
+    const span = document.createElement("span");
+    span.className = cls;
+    span.textContent = body;
+    terminal.appendChild(span);
+  } else {
+    terminal.appendChild(document.createTextNode(body));
+  }
+  terminal.scrollTop = terminal.scrollHeight;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Pipeline start
+// ─────────────────────────────────────────────────────────────
+async function startPipeline() {
+  const payload = {
+    scan_from:  document.getElementById("scan_from").value || null,
+    extra_urls: document.getElementById("extra_urls").value
+                  .split("\n").map(s => s.trim()).filter(Boolean),
+    red_thread: document.getElementById("red_thread").value,
+  };
+
+  const resp = await fetch("/api/run", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(payload),
+  });
+
+  if (resp.status === 409) {
+    alert("Pipeline läuft bereits. Bitte warten.");
+    return;
+  }
+  if (!resp.ok) {
+    alert("Fehler beim Starten: " + await resp.text());
+    return;
+  }
+
+  // Switch to running state
+  hide("state-idle");
+  show("state-running");
+  document.getElementById("terminal").textContent = "";
+  document.getElementById("running-title").innerHTML =
+    '<span class="spinner"></span>&nbsp; Scanning läuft…';
+  showPhase("scanning");
+  currentAgent = "scan";
+
+  connectPipelineSSE();
+}
+
+// ─────────────────────────────────────────────────────────────
+// SSE connection
+// ─────────────────────────────────────────────────────────────
+function connectPipelineSSE() {
+  if (eventSource) { eventSource.close(); }
+  eventSource = new EventSource("/api/stream");
+
+  eventSource.onmessage = (e) => {
+    const { text } = JSON.parse(e.data);
+    appendToTerminal(text);
+
+    // Detect phase transitions from system tokens
+    if (text.includes("[write]") || text.includes("Newsletter Writer")) {
+      document.getElementById("running-title").innerHTML =
+        '<span class="spinner"></span>&nbsp; Writing läuft…';
+      showPhase("writing");
+    }
+  };
+
+  eventSource.addEventListener("review", (e) => {
+    eventSource.close();
+    const { notes } = JSON.parse(e.data);
+    showReviewState(notes);
+  });
+
+  eventSource.addEventListener("done", () => {
+    eventSource.close();
+    showDoneState();
+  });
+
+  eventSource.addEventListener("error", (e) => {
+    eventSource.close();
+    showPhase("error");
+    appendToTerminal("\n\n❌ Pipeline fehlgeschlagen. Details oben.");
+  });
+
+  eventSource.onerror = () => {
+    // Auto-reconnect on disconnect — check if still running
+    fetch("/api/status")
+      .then(r => r.json())
+      .then(s => {
+        if (s.phase === "review")  { eventSource.close(); }
+        if (s.phase === "done")    { eventSource.close(); showDoneState(); }
+        if (s.phase === "error")   { eventSource.close(); showPhase("error"); }
+        if (!s.running && s.phase !== "review") { eventSource.close(); }
+      })
+      .catch(() => {});
+  };
+}
+
+// ─────────────────────────────────────────────────────────────
+// Review state
+// ─────────────────────────────────────────────────────────────
+function showReviewState(notes) {
+  hide("state-running");
+  show("state-review");
+  showPhase("review");
+
+  // Pre-fill red thread from original input
+  const origRedThread = document.getElementById("red_thread").value;
+  document.getElementById("review_red_thread").value = origRedThread;
+
+  topicData = parseResearchNotes(notes);
+  renderTopicCards();
+}
+
+function parseResearchNotes(notes) {
+  const topics = [];
+  // Match sections: ## Sektion N: Title and ### ArticleTitle
+  const sectionRegex = /^## Sektion \d+: (.+)$/gm;
+  const parts = notes.split(/^## Sektion \d+:/m).slice(1);
+  const sectionTitles = [];
+  let m;
+  while ((m = sectionRegex.exec(notes)) !== null) {
+    sectionTitles.push(m[1].trim());
+  }
+
+  parts.forEach((part, idx) => {
+    const sectionTitle = sectionTitles[idx] || `Sektion ${idx + 1}`;
+    // Skip Termine and Zitat sections for review
+    if (sectionTitle.toLowerCase().includes("termine") ||
+        sectionTitle.toLowerCase().includes("zitat")) return;
+
+    // Extract articles: ### Title\n...text...
+    const articleRegex = /^### (.+)\n([\s\S]*?)(?=^###|\Z)/gm;
+    let am;
+    while ((am = articleRegex.exec(part)) !== null) {
+      const title   = am[1].trim();
+      const summary = am[2].trim().slice(0, 300).replace(/\*\*.*?\*\*/g, "").trim();
+      topics.push({
+        section: sectionTitle,
+        title,
+        summary,
+        include: true,
+        comment: "",
+      });
+    }
+
+    // Fallback: if no ### subheadings, use section as one topic
+    if (topics.filter(t => t.section === sectionTitle).length === 0) {
+      const text = part.trim().slice(0, 300);
+      if (text) topics.push({ section: sectionTitle, title: sectionTitle, summary: text, include: true, comment: "" });
+    }
+  });
+
+  return topics.length > 0 ? topics : [
+    { section: "Allgemein", title: "Alle gescannten Inhalte", summary: "Kein strukturierter Parse möglich — alle Inhalte einbeziehen.", include: true, comment: "" }
+  ];
+}
+
+function renderTopicCards() {
+  const container = document.getElementById("topic-cards");
+  container.innerHTML = "";
+
+  topicData.forEach((topic, idx) => {
+    const card = document.createElement("div");
+    card.className = "topic-card " + (topic.include ? "included" : "excluded");
+    card.id = `topic-card-${idx}`;
+
+    card.innerHTML = `
+      <div class="topic-card-header">
+        <span class="topic-section">${escHtml(topic.section)}</span>
+        <span class="topic-title">${escHtml(topic.title)}</span>
+      </div>
+      ${topic.summary ? `<div class="topic-summary">${escHtml(topic.summary)}${topic.summary.length >= 300 ? "…" : ""}</div>` : ""}
+      <div class="topic-controls">
+        <button class="toggle-btn ${topic.include ? "active-include" : ""}"
+                id="btn-include-${idx}" onclick="setInclude(${idx}, true)">✓ Einbeziehen</button>
+        <button class="toggle-btn ${!topic.include ? "active-exclude" : ""}"
+                id="btn-exclude-${idx}" onclick="setInclude(${idx}, false)">✗ Weglassen</button>
+        <input class="topic-comment" type="text" placeholder="Kommentar (optional)"
+               value="${escHtml(topic.comment)}"
+               oninput="topicData[${idx}].comment = this.value">
+      </div>`;
+
+    container.appendChild(card);
+  });
+}
+
+function setInclude(idx, include) {
+  topicData[idx].include = include;
+  const card = document.getElementById(`topic-card-${idx}`);
+  card.className = "topic-card " + (include ? "included" : "excluded");
+  document.getElementById(`btn-include-${idx}`).className = "toggle-btn" + (include ? " active-include" : "");
+  document.getElementById(`btn-exclude-${idx}`).className = "toggle-btn" + (!include ? " active-exclude" : "");
+}
+
+function toggleAllTopics(include) {
+  topicData.forEach((_, idx) => setInclude(idx, include));
+}
+
+function escHtml(str) {
+  return (str || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+// ─────────────────────────────────────────────────────────────
+// Submit review
+// ─────────────────────────────────────────────────────────────
+async function submitReview() {
+  const payload = {
+    topics:     topicData,
+    red_thread: document.getElementById("review_red_thread").value,
+  };
+
+  const resp = await fetch("/api/approve", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(payload),
+  });
+
+  if (!resp.ok) {
+    alert("Fehler: " + await resp.text());
+    return;
+  }
+
+  hide("state-review");
+  show("state-running");
+  document.getElementById("running-title").innerHTML =
+    '<span class="spinner"></span>&nbsp; Writing läuft…';
+  showPhase("writing");
+  currentAgent = "write";
+
+  // Reconnect SSE for Phase B
+  connectPipelineSSE();
+}
+
+// ─────────────────────────────────────────────────────────────
+// Done state
+// ─────────────────────────────────────────────────────────────
+async function showDoneState() {
+  hide("state-running");
+  show("state-done");
+  showPhase("done");
+  document.getElementById("done-alert").classList.remove("hidden");
+
+  try {
+    const resp = await fetch("/api/newsletter-html");
+    if (resp.ok) {
+      currentHtml = await resp.text();
+      const frame = document.getElementById("preview-frame");
+      frame.srcdoc = currentHtml;
+    }
+  } catch (e) {}
+}
+
+function copyHtml() {
+  if (!currentHtml) return;
+  navigator.clipboard.writeText(currentHtml)
+    .then(() => alert("HTML in Zwischenablage kopiert!"))
+    .catch(() => alert("Kopieren fehlgeschlagen — bitte manuell aus dem Quelltext kopieren."));
+}
+
+function downloadHtml() {
+  if (!currentHtml) return;
+  const a = document.createElement("a");
+  const today = new Date().toISOString().slice(0,10);
+  a.download = `bms-newsletter-${today}.html`;
+  a.href = "data:text/html;charset=utf-8," + encodeURIComponent(currentHtml);
+  a.click();
+}
+
+function resetUI() {
+  hide("state-done");
+  hide("state-running");
+  hide("state-review");
+  show("state-idle");
+  showPhase("idle");
+  currentAgent = "";
+  currentHtml  = "";
+  topicData    = [];
+  document.getElementById("terminal").textContent = "";
+  document.getElementById("topic-cards").innerHTML = "";
+  document.getElementById("done-alert").classList.add("hidden");
+}
+
+// ─────────────────────────────────────────────────────────────
+// Content Collector
+// ─────────────────────────────────────────────────────────────
+async function startCollector() {
+  const btn    = document.getElementById("collector-btn");
+  const output = document.getElementById("collector-output");
+  const alert  = document.getElementById("collector-alert");
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Sammelt…';
+  output.textContent = "";
+  output.classList.add("active");
+  alert.className = "hidden";
+
+  const resp = await fetch("/api/collect", { method: "POST" });
+  if (resp.status === 409) {
+    alert.className = "alert alert-warning";
+    alert.textContent = "Collector läuft bereits.";
+    btn.disabled = false;
+    btn.innerHTML = '<span>📥</span> Jetzt sammeln';
+    return;
+  }
+
+  const es = new EventSource("/api/collect/stream");
+  es.onmessage = (e) => {
+    const { text } = JSON.parse(e.data);
+    output.textContent += text;
+    output.scrollTop = output.scrollHeight;
+  };
+  es.addEventListener("done", () => {
+    es.close();
+    btn.disabled = false;
+    btn.innerHTML = '<span>📥</span> Jetzt sammeln';
+    output.textContent += "\n✅ Fertig.";
+  });
+  es.onerror = () => {
+    es.close();
+    btn.disabled = false;
+    btn.innerHTML = '<span>📥</span> Jetzt sammeln';
+  };
+}
+
+// ─────────────────────────────────────────────────────────────
+// Init: restore state if pipeline is already running
+// ─────────────────────────────────────────────────────────────
+(async function init() {
+  {% if pipeline_running %}
+  // Restore running state if server was already mid-run when page loaded
+  const phase = "{{ pipeline_phase }}";
+  if (phase === "review") {
+    try {
+      const r = await fetch("/api/research-notes");
+      if (r.ok) {
+        const { content } = await r.json();
+        showReviewState(content);
+      }
+    } catch(e) {}
+  } else if (phase === "scanning" || phase === "writing") {
+    hide("state-idle");
+    show("state-running");
+    showPhase(phase);
+    document.getElementById("running-title").innerHTML =
+      '<span class="spinner"></span>&nbsp; Pipeline läuft (wiederverbunden)…';
+    connectPipelineSSE();
+  } else if (phase === "done") {
+    showDoneState();
+  }
+  {% endif %}
+})();
+</script>
+</body>
+</html>

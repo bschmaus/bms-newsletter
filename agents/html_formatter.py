@@ -29,6 +29,7 @@ from config import (
     MODEL,
     NEWSLETTER_ARCHIVE,
     NEWSLETTER_HTML,
+    NEWSLETTER_ENGLISH,
     CORPORATE_DESIGN_FILE,
     read_file,
     ensure_data_dir,
@@ -63,17 +64,46 @@ SYSTEM_PROMPT = textwrap.dedent("""\
     - Alle URLs im Text werden zu klickbaren <a href>-Links.
     - Die BMS-Website ist https://bilinguale-montessori-schule.de
       (niemals bms-ingelheim.de oder andere Domains).
-    - "Zum Artikel auf der BMS-Website"-Links zeigen auf
-      https://bilinguale-montessori-schule.de/de/aktuelles/news-de
+    - Artikel-Links: Wenn ein Artikel eine spezifische URL hat
+      (z.B. https://bilinguale-montessori-schule.de/de/aktuelles/news-de/bmsbus),
+      diese URL als Link verwenden — NICHT die Übersichtsseite.
     - Termine werden als hervorgehobene Box mit Datum-/Event-Spalten dargestellt.
     - Das Eröffnungszitat aus dem Newsletter-Text wird als Pull-Quote gestaltet.
     - Das Abschluss-Zitat MUSS ein echtes, verifizierbares Maria-Montessori-Zitat
       sein — mit Quellenangabe (Werk, Jahr). Es darf KEIN Satz aus dem
       Newsletter-Text sein. Es soll thematisch zum roten Faden der Ausgabe passen.
+
+    BILINGUALES LAYOUT (wenn englische Version vorhanden):
+    - Ganz oben nach dem Logo: ein Hinweis-Link
+      "Read in English ↓" der zum Anchor #english springt
+    - Dann der vollständige DEUTSCHE Newsletter
+    - Dann ein visueller Trenner (Linie + Anchor <a name="english"></a>)
+      mit Überschrift "English Version"
+    - Dann der vollständige ENGLISCHE Newsletter (gleiche Gestaltung)
+    - Oben im englischen Teil: Link "Deutsche Version ↑" der zu #top springt
+    - Wenn KEINE englische Version mitgegeben wird: nur den deutschen Teil,
+      ohne Sprachlinks (rückwärtskompatibel)
 """)
 
 
-def build_prompt(newsletter: str, subject: str, design_guide: str) -> str:
+def build_prompt(newsletter: str, subject: str, design_guide: str,
+                 english: str = "") -> str:
+    english_section = ""
+    if english.strip():
+        english_section = textwrap.dedent(f"""
+
+        ---
+
+        ## Englische Version (gleiche Gestaltung, nach dem deutschen Teil)
+
+        {english}
+
+        ---
+
+        WICHTIG: Baue BEIDE Versionen in ein einziges HTML-Dokument ein.
+        Oben: "Read in English ↓" Link. Unten: englische Version mit Anchor.
+        """)
+
     return textwrap.dedent(f"""\
         ## Corporate Design & technische Vorgaben
 
@@ -84,9 +114,10 @@ def build_prompt(newsletter: str, subject: str, design_guide: str) -> str:
         ## Newsletter-Betreff
         {subject}
 
-        ## Newsletter-Text (vollständig und unverändert übernehmen)
+        ## Newsletter-Text (DEUTSCH — vollständig und unverändert übernehmen)
 
         {newsletter}
+        {english_section}
 
         ---
 
@@ -101,8 +132,11 @@ def build_prompt(newsletter: str, subject: str, design_guide: str) -> str:
 # Agent
 # ---------------------------------------------------------------------------
 
-def run(client: anthropic.Anthropic | None = None) -> str:
-    """Run the HTML formatter agent. Returns the path to the generated file."""
+def run(client: anthropic.Anthropic | None = None, *, emit=None) -> str:
+    """Run the HTML formatter agent. Returns the path to the generated file.
+
+    emit: optional callable(str) forwarded to stream_claude for SSE streaming.
+    """
     ensure_data_dir()
 
     if client is None:
@@ -121,13 +155,19 @@ def run(client: anthropic.Anthropic | None = None) -> str:
     if not design_guide:
         print("  ⚠️  corporate_design.md nicht gefunden — ohne Design-Vorgaben fortfahren.")
 
+    english = read_file(NEWSLETTER_ENGLISH)
+    if english.strip():
+        print("  🌐 Englische Version gefunden — bilinguales Layout")
+    else:
+        print("  ℹ️  Keine englische Version — nur Deutsch")
+
     print(f"\n  Formatiere: {subject}\n")
     print("-" * 60)
 
-    prompt = build_prompt(newsletter, subject, design_guide)
+    prompt = build_prompt(newsletter, subject, design_guide, english)
     html = stream_claude(
         client, model=MODEL, system=SYSTEM_PROMPT,
-        user_message=prompt, max_tokens=16000,
+        user_message=prompt, max_tokens=32000, emit=emit,
     )
     print("-" * 60 + "\n")
 

@@ -79,7 +79,7 @@ hinterlassen (in dieser Priorität):
 Keine Übergangssätze zwischen Sektionen. Die Überschriften tragen die Struktur.
 
 ## Roter Faden
-Der Newsletter erscheint nur monatlich. Versuche, die Themen inhaltlich zu verbinden.
+Der Newsletter erscheint alle 8 Wochen. Versuche, die Themen inhaltlich zu verbinden.
 Die Begrüßung benennt das verbindende Thema. Die Sektionen greifen es auf.
 Beispiel: Wenn das Schulbarometer zeigt, dass Kinder Mitbestimmung wollen, und die BMS
 gerade den Erdkinderplan thematisiert — das ist derselbe Gedanke.
@@ -106,6 +106,11 @@ gerade den Erdkinderplan thematisiert — das ist derselbe Gedanke.
 - Zitate von Eltern/Schüler:innen/Lernbegleiter:innen nur wenn wirklich in der Quelle —
   nie erfinden, nie paraphrasieren
 - Interne Schwierigkeiten oder Fehler der BMS gehören nicht in den Newsletter
+- FAKTEN-REGEL: Verwende NUR Fakten (Daten, Namen, Zahlen, Orte), die im
+  Recherche-Material explizit vorkommen. Keine eigenen Annahmen, keine Erfindungen.
+  Veröffentlichungsdaten von Artikeln sind KEINE Veranstaltungstermine.
+  Wenn ein Artikel über eine Person berichtet, heißt das nicht, dass diese
+  Person an einer Veranstaltung teilnimmt.
 
 ## BMS-Terminologie (verpflichtend — IMMER beachten)
 - "Lerngruppe" statt "Klasse"
@@ -140,11 +145,21 @@ kurz den Kontext setzen: Was ist das? Warum gibt es das jetzt?
 
 def build_user_message(research: str, learnings: str, voice: str,
                        redteam_feedback: str = "",
-                       school_context: str = "") -> str:
+                       school_context: str = "",
+                       red_thread: str = "",
+                       review_feedback: str = "") -> str:
     today = datetime.now().strftime("%A, %d. %B %Y")
     redteam_section = (
         f"\n        ## Red Team Feedback (bitte jeden Punkt adressieren)\n        {redteam_feedback}"
         if redteam_feedback.strip() else ""
+    )
+    red_thread_section = (
+        f"\n        ## Editoriale Direktive (manuell vorgegeben — bitte beachten)\n        {red_thread}"
+        if red_thread.strip() else ""
+    )
+    review_section = (
+        f"\n        ## Themen-Review (Entscheidungen der Redaktion)\n        {review_feedback}"
+        if review_feedback.strip() else ""
     )
     return textwrap.dedent(f"""
         Heute ist {today}.
@@ -158,6 +173,8 @@ def build_user_message(research: str, learnings: str, voice: str,
         ## Feedback aus vergangenen Newslettern
         {learnings or "_Noch keins._"}
         {redteam_section}
+        {red_thread_section}
+        {review_section}
 
         ## Recherche-Material (alle Sektionen vorbereitet)
         {research}
@@ -203,9 +220,16 @@ def _replace_latest_entry(newsletter: str, subject: str) -> None:
 
 def run(client: anthropic.Anthropic | None = None,
         redteam_feedback: str = "",
-        revision: bool = False) -> str:
+        revision: bool = False, *,
+        red_thread: str = "",
+        review_feedback: str = "",
+        emit=None) -> str:
     """
     Run the newsletter writer agent. Returns the finished newsletter as a string.
+
+    red_thread:      Optional editorial direction from the web UI.
+    review_feedback: Structured topic decisions from the scan review step.
+    emit:            Optional callable(str) for SSE streaming.
     """
     ensure_data_dir()
 
@@ -227,10 +251,12 @@ def run(client: anthropic.Anthropic | None = None,
     print("-" * 60)
 
     user_message = build_user_message(research, learnings, voice, redteam_feedback,
-                                      school_context)
+                                      school_context,
+                                      red_thread=red_thread,
+                                      review_feedback=review_feedback)
     newsletter = stream_claude(
         client, model=MODEL, system=SYSTEM_PROMPT,
-        user_message=user_message, max_tokens=4000,
+        user_message=user_message, max_tokens=4000, emit=emit,
     )
     print("-" * 60 + "\n")
 

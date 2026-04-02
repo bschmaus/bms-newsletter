@@ -67,6 +67,19 @@ Der Newsletter soll diese vier Eindrücke hinterlassen (in dieser Priorität):
 - Werden keine Behauptungen aufgestellt, die nicht belegt sind?
 - Werden Zitate (Eltern, Schüler:innen, Lehrende) wörtlich aus der Quelle übernommen?
   Erfundene oder paraphrasierte Zitate SOFORT beanstanden.
+- JEDE faktische Behauptung (Datum, Zahl, Name, Ort) muss im Recherche-Material
+  nachweisbar sein. Wenn nicht nachweisbar: SOFORT beanstanden.
+- Veröffentlichungsdaten dürfen NICHT als Veranstaltungen dargestellt werden.
+  Prüfe bei jedem genannten Datum: Ist das ein Publikationsdatum oder ein Event?
+- Redaktionelle Einordnung ist erlaubt, aber NUR auf Basis validierter Fakten.
+  Erlaubt: "Das zeigt, wie wichtig..." (Meinung über belegten Fakt)
+  Verboten: "Ela Eckert wird am 15. März sprechen" (wenn nicht in Quelle)
+- Personen-Check bei jeder erwähnten Person:
+  1. Kommt der Name im Recherche-Material vor?
+  2. Stimmt der Kontext (Rolle, Tätigkeit)?
+  3. Wird der Person etwas zugeschrieben, das die Quelle nicht belegt?
+  Wenn ein Artikel ÜBER eine Person berichtet, heißt das NICHT automatisch,
+  dass diese Person an einer Veranstaltung teilnimmt oder einen Vortrag hält.
 
 ## Prüfung 2 — Roter Faden & Struktur
 - Gibt es ein verbindendes Thema, das sich durch den Newsletter zieht?
@@ -212,8 +225,11 @@ def save_redteam_notes(subject: str, entries: list[dict]) -> None:
 # Agent
 # ---------------------------------------------------------------------------
 
-def run(client: anthropic.Anthropic | None = None) -> str:
-    """Run the Red Team agent. Returns the final newsletter text."""
+def run(client: anthropic.Anthropic | None = None, *, emit=None) -> str:
+    """Run the Red Team agent. Returns the final newsletter text.
+
+    emit: optional callable(str) forwarded to stream_claude for SSE streaming.
+    """
     ensure_data_dir()
 
     if client is None:
@@ -249,7 +265,7 @@ def run(client: anthropic.Anthropic | None = None) -> str:
 
         critique = stream_claude(
             client, model=MODEL, system=SYSTEM_PROMPT,
-            user_message=prompt, max_tokens=1500,
+            user_message=prompt, max_tokens=1500, emit=emit,
         )
         entries.append({"iteration": iteration, "critique": critique})
         save_redteam_notes(subject, entries)
@@ -269,7 +285,7 @@ def run(client: anthropic.Anthropic | None = None) -> str:
 
         print(f"\n  ↩️  ÜBERARBEITEN — Newsletter Writer wird neu gestartet...")
         from agents.newsletter_writer import run as write_newsletter
-        write_newsletter(client, redteam_feedback=revision_instructions, revision=True)
+        write_newsletter(client, redteam_feedback=revision_instructions, revision=True, emit=emit)
 
     print(f"\n  ✅ Red Team Notizen gespeichert: {REDTEAM_NOTES_FILE}")
     _, final = extract_latest_newsletter(read_file(NEWSLETTER_ARCHIVE))

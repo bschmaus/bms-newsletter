@@ -1,4 +1,5 @@
 """Shared configuration and file paths for BMS Newsletter."""
+import os
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -16,6 +17,20 @@ SCHOOL_CONTEXT_FILE  = DATA_DIR / "school_context.md"
 TOPICS_ARCHIVE       = DATA_DIR / "topics_archive.md"
 NEWSLETTER_HTML      = DATA_DIR / "newsletter.html"
 CORPORATE_DESIGN_FILE = DATA_DIR / "corporate_design.md"
+NEWSLETTER_ENGLISH    = DATA_DIR / "newsletter_english.md"
+CONTENT_POOL_FILE     = DATA_DIR / "content_pool.md"
+
+# --- SMTP / Email (from .env) ---
+SMTP_HOST     = os.getenv("SMTP_HOST", "")
+SMTP_PORT     = int(os.getenv("SMTP_PORT", "587"))
+SMTP_USER     = os.getenv("SMTP_USER", "")
+SMTP_PASSWORD  = os.getenv("SMTP_PASSWORD", "")
+SMTP_FROM      = os.getenv("SMTP_FROM", "")
+NOTIFY_EMAIL   = os.getenv("NOTIFY_EMAIL", "")
+
+# --- Web UI Auth (from .env) ---
+WEB_USER = os.getenv("WEB_USER", "bms")
+WEB_PASS = os.getenv("WEB_PASS", "")
 
 BROWSER_HEADERS = {
     "User-Agent": (

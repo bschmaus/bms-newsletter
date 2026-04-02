@@ -1,0 +1,20 @@
+[Unit]
+Description=BMS Newsletter Web Server
+After=network.target
+
+[Service]
+Type=simple
+User=bms
+WorkingDirectory=/opt/bms-newsletter
+EnvironmentFile=/opt/bms-newsletter/.env
+ExecStart=/opt/bms-newsletter/venv/bin/uvicorn web.server:app \
+    --host 0.0.0.0 \
+    --port 8000 \
+    --workers 1
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
