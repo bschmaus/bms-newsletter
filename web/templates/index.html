@@ -263,6 +263,11 @@
       </div>
 
       <div id="terminal" class="terminal"></div>
+
+      <div id="error-actions" class="btn-row hidden">
+        <button class="btn btn-primary" onclick="resetUI()">↩ Zurück zum Start</button>
+        <button class="btn btn-outline" onclick="retryPipeline()">🔄 Erneut versuchen</button>
+      </div>
     </div>
   </div><!-- /state-running -->
 
@@ -470,6 +475,10 @@ function connectPipelineSSE() {
     eventSource.close();
     showPhase("error");
     appendToTerminal("\n\n❌ Pipeline fehlgeschlagen. Details oben.");
+    // Show "back to start" button
+    document.getElementById("running-title").innerHTML =
+      '❌ Pipeline fehlgeschlagen';
+    showErrorActions();
   });
 
   eventSource.onerror = () => {
@@ -657,6 +666,16 @@ function downloadHtml() {
   a.click();
 }
 
+function showErrorActions() {
+  document.getElementById("error-actions").classList.remove("hidden");
+}
+
+function retryPipeline() {
+  document.getElementById("error-actions").classList.add("hidden");
+  resetUI();
+  startPipeline();
+}
+
 function resetUI() {
   hide("state-done");
   hide("state-running");
@@ -669,6 +688,7 @@ function resetUI() {
   document.getElementById("terminal").textContent = "";
   document.getElementById("topic-cards").innerHTML = "";
   document.getElementById("done-alert").classList.add("hidden");
+  document.getElementById("error-actions").classList.add("hidden");
 }
 
 // ─────────────────────────────────────────────────────────────
