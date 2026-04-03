@@ -184,11 +184,12 @@ def fetch_all_content(extra_urls: list[str] | None = None) -> tuple[str, str, st
         if extras:
             montessori_content += "\n\n## Zusätzliche Quellen\n\n" + "\n\n".join(extras)
 
-    # Include pre-collected content pool if available
-    pool = read_file(CONTENT_POOL_FILE)
-    if pool.strip() and "_Noch kein Content._" not in pool:
-        print("  📦 Content Pool gefunden — wird einbezogen")
-        montessori_content += f"\n\n## Vorab gesammelte Inhalte (Content Pool)\n{pool[:6000]}"
+    # Content pool disabled — scanner fetches all sources directly.
+    # Collector can be re-enabled later if needed.
+    # pool = read_file(CONTENT_POOL_FILE)
+    # if pool.strip() and "_Noch kein Content._" not in pool:
+    #     print("  📦 Content Pool gefunden — wird einbezogen")
+    #     montessori_content += f"\n\n## Vorab gesammelte Inhalte (Content Pool)\n{pool[:6000]}"
 
     return bms_news, bms_termine, montessori_content, bildung_content
 

@@ -150,15 +150,15 @@ def run_pipeline(
             pause_after_scan.wait()
             print("  ▶  Review abgeschlossen — Writing startet")
 
-    # Auto-reset content pool after full pipeline run
-    if CONTENT_POOL_FILE.exists():
-        pool_text = CONTENT_POOL_FILE.read_text(encoding="utf-8").strip()
-        if pool_text and "_Noch kein Content._" not in pool_text:
-            CONTENT_POOL_FILE.write_text(
-                "# Content Pool — BMS Newsletter\n\n_Noch kein Content._\n",
-                encoding="utf-8",
-            )
-            print("  🗑️  Content Pool geleert (wurde in Newsletter verarbeitet)")
+    # Content pool auto-reset disabled — collector is currently inactive.
+    # if CONTENT_POOL_FILE.exists():
+    #     pool_text = CONTENT_POOL_FILE.read_text(encoding="utf-8").strip()
+    #     if pool_text and "_Noch kein Content._" not in pool_text:
+    #         CONTENT_POOL_FILE.write_text(
+    #             "# Content Pool — BMS Newsletter\n\n_Noch kein Content._\n",
+    #             encoding="utf-8",
+    #         )
+    #         print("  🗑️  Content Pool geleert (wurde in Newsletter verarbeitet)")
 
     elapsed = time.time() - total_start
     banner(f"🎉 Pipeline fertig! Gesamtzeit: {elapsed:.0f}s")

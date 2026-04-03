@@ -149,17 +149,7 @@
       border-radius: 6px;
     }
 
-    /* Collector panel */
-    .collector-output {
-      background: #1a1a2e; color: #ccc;
-      border-radius: 6px; padding: 12px;
-      font-family: monospace; font-size: 0.78rem;
-      height: 150px; overflow-y: auto;
-      white-space: pre-wrap;
-      margin-top: 12px;
-      display: none;
-    }
-    .collector-output.active { display: block; }
+    /* Collector panel — currently disabled */
 
     /* Spinner */
     .spinner {
@@ -243,19 +233,7 @@
       </div>
     </div>
 
-    <!-- Collector -->
-    <div class="card">
-      <h2>Content Collector</h2>
-      <p style="font-size:0.88rem; color:#555; margin-bottom:12px;">
-        Sammelt Inhalte aus allen Quellen und speichert sie im Content Pool
-        für die nächste Newsletter-Erstellung.
-      </p>
-      <div id="collector-alert" class="hidden"></div>
-      <button class="btn btn-secondary btn-sm" onclick="startCollector()" id="collector-btn">
-        <span>📥</span> Jetzt sammeln
-      </button>
-      <div id="collector-output" class="collector-output"></div>
-    </div>
+    <!-- Collector UI removed — collector.py still exists but is inactive -->
 
   </div><!-- /state-idle -->
 
@@ -812,47 +790,7 @@ function resetUI() {
   document.getElementById("error-actions").classList.add("hidden");
 }
 
-// ─────────────────────────────────────────────────────────────
-// Content Collector
-// ─────────────────────────────────────────────────────────────
-async function startCollector() {
-  const btn    = document.getElementById("collector-btn");
-  const output = document.getElementById("collector-output");
-  const alert  = document.getElementById("collector-alert");
-
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Sammelt…';
-  output.textContent = "";
-  output.classList.add("active");
-  alert.className = "hidden";
-
-  const resp = await fetch("/api/collect", { method: "POST" });
-  if (resp.status === 409) {
-    alert.className = "alert alert-warning";
-    alert.textContent = "Collector läuft bereits.";
-    btn.disabled = false;
-    btn.innerHTML = '<span>📥</span> Jetzt sammeln';
-    return;
-  }
-
-  const es = new EventSource("/api/collect/stream");
-  es.onmessage = (e) => {
-    const { text } = JSON.parse(e.data);
-    output.textContent += text;
-    output.scrollTop = output.scrollHeight;
-  };
-  es.addEventListener("done", () => {
-    es.close();
-    btn.disabled = false;
-    btn.innerHTML = '<span>📥</span> Jetzt sammeln';
-    output.textContent += "\n✅ Fertig.";
-  });
-  es.onerror = () => {
-    es.close();
-    btn.disabled = false;
-    btn.innerHTML = '<span>📥</span> Jetzt sammeln';
-  };
-}
+// Content Collector — currently disabled (code in collector.py still exists)
 
 // ─────────────────────────────────────────────────────────────
 // Init: restore state if pipeline is already running
