@@ -171,6 +171,23 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* Extra topic input */
+    .extra-topic-row {
+      border: 1px dashed #3A7CA5;
+      border-radius: 6px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      background: #f0f7fc;
+    }
+    .extra-topic-row input, .extra-topic-row textarea {
+      background: #fff;
+    }
+    .extra-topic-row .remove-extra {
+      float: right;
+      background: none; border: none; color: #c0392b;
+      cursor: pointer; font-size: 1.1rem; font-weight: 700;
+    }
+
     /* Utility */
     .hidden { display: none !important; }
     .mt-4 { margin-top: 16px; }
@@ -291,8 +308,21 @@
 
       <div id="topic-cards"></div>
 
+      <!-- Add custom topic -->
+      <div id="extra-topics"></div>
+      <button class="btn btn-outline btn-sm mt-4" onclick="addExtraTopic()" style="margin-bottom:16px;">
+        ＋ Eigenes Thema ergänzen
+      </button>
+
+      <!-- Topic counter & minimum warning -->
+      <div id="topic-counter" style="font-size:0.88rem; font-weight:600; color:#2B5B84; margin-bottom:8px;"></div>
+      <div id="min-warning" class="alert alert-danger hidden" style="margin-bottom:12px;">
+        ⚠️ Weniger als 3 Themen ausgewählt. Ein Newsletter mit so wenig Inhalt lohnt sich kaum.
+        Du kannst trotzdem fortfahren — oder oben eigene Themen ergänzen.
+      </div>
+
       <div class="btn-row">
-        <button class="btn btn-success" onclick="submitReview()">
+        <button class="btn btn-success" id="btn-submit-review" onclick="submitReview()">
           ✓ Writing starten
         </button>
         <button class="btn btn-outline btn-sm" onclick="toggleAllTopics(true)">
@@ -582,6 +612,7 @@ function renderTopicCards() {
 
     container.appendChild(card);
   });
+  updateTopicCounter();
 }
 
 function setInclude(idx, include) {
@@ -590,10 +621,78 @@ function setInclude(idx, include) {
   card.className = "topic-card " + (include ? "included" : "excluded");
   document.getElementById(`btn-include-${idx}`).className = "toggle-btn" + (include ? " active-include" : "");
   document.getElementById(`btn-exclude-${idx}`).className = "toggle-btn" + (!include ? " active-exclude" : "");
+  updateTopicCounter();
 }
 
 function toggleAllTopics(include) {
   topicData.forEach((_, idx) => setInclude(idx, include));
+  updateTopicCounter();
+}
+
+// ─────────────────────────────────────────────────────────────
+// Topic counter & minimum check
+// ─────────────────────────────────────────────────────────────
+function countIncludedTopics() {
+  const fromScan = topicData.filter(t => t.include).length;
+  const fromExtra = document.querySelectorAll(".extra-topic-row").length;
+  // Only count extras that have a title
+  let filledExtras = 0;
+  document.querySelectorAll(".extra-topic-title").forEach(input => {
+    if (input.value.trim()) filledExtras++;
+  });
+  return fromScan + filledExtras;
+}
+
+function updateTopicCounter() {
+  const count = countIncludedTopics();
+  const total = topicData.length;
+  const counter = document.getElementById("topic-counter");
+  const warning = document.getElementById("min-warning");
+
+  counter.textContent = `${count} von ${total} Themen ausgewählt` +
+    (document.querySelectorAll(".extra-topic-row").length > 0
+      ? ` + eigene Ergänzungen`
+      : "");
+
+  if (count < 3) {
+    warning.classList.remove("hidden");
+  } else {
+    warning.classList.add("hidden");
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Extra topics (user-added)
+// ─────────────────────────────────────────────────────────────
+let extraTopicCount = 0;
+
+function addExtraTopic() {
+  const container = document.getElementById("extra-topics");
+  const idx = extraTopicCount++;
+  const row = document.createElement("div");
+  row.className = "extra-topic-row";
+  row.id = `extra-topic-${idx}`;
+  row.innerHTML = `
+    <button class="remove-extra" onclick="removeExtraTopic(${idx})" title="Entfernen">✕</button>
+    <div class="form-row" style="margin-bottom:8px;">
+      <label>Thema / Überschrift</label>
+      <input type="text" class="extra-topic-title" placeholder="z.B. »Neues Klettergerüst auf dem Pausenhof«"
+             oninput="updateTopicCounter()">
+    </div>
+    <div class="form-row" style="margin-bottom:0;">
+      <label>Beschreibung / Stichpunkte für den Writer</label>
+      <textarea class="extra-topic-desc" rows="2"
+        placeholder="z.B. »Seit März fertig, Spende vom Förderverein, Kinder lieben es. Bitte positiv und kurz halten.«"></textarea>
+    </div>
+  `;
+  container.appendChild(row);
+  updateTopicCounter();
+}
+
+function removeExtraTopic(idx) {
+  const row = document.getElementById(`extra-topic-${idx}`);
+  if (row) row.remove();
+  updateTopicCounter();
 }
 
 function escHtml(str) {
@@ -604,9 +703,29 @@ function escHtml(str) {
 // Submit review
 // ─────────────────────────────────────────────────────────────
 async function submitReview() {
+  const count = countIncludedTopics();
+  if (count < 3) {
+    if (!confirm(`Nur ${count} Thema(en) ausgewählt — ein Newsletter braucht normalerweise mindestens 3 Themen.\n\nTrotzdem fortfahren?`)) {
+      return;
+    }
+  }
+  if (count < 1) {
+    alert("Mindestens 1 Thema muss ausgewählt oder ergänzt werden.");
+    return;
+  }
+
+  // Collect extra topics
+  const extraTopics = [];
+  document.querySelectorAll(".extra-topic-row").forEach(row => {
+    const title = row.querySelector(".extra-topic-title").value.trim();
+    const desc  = row.querySelector(".extra-topic-desc").value.trim();
+    if (title) extraTopics.push({ title, description: desc });
+  });
+
   const payload = {
-    topics:     topicData,
-    red_thread: document.getElementById("review_red_thread").value,
+    topics:       topicData,
+    red_thread:   document.getElementById("review_red_thread").value,
+    extra_topics: extraTopics,
   };
 
   const resp = await fetch("/api/approve", {
@@ -687,6 +806,8 @@ function resetUI() {
   topicData    = [];
   document.getElementById("terminal").textContent = "";
   document.getElementById("topic-cards").innerHTML = "";
+  document.getElementById("extra-topics").innerHTML = "";
+  extraTopicCount = 0;
   document.getElementById("done-alert").classList.add("hidden");
   document.getElementById("error-actions").classList.add("hidden");
 }

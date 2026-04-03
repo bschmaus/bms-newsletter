@@ -219,8 +219,9 @@ async def start_run(req: RunRequest, _auth: Auth):
 
 
 class ApproveRequest(BaseModel):
-    topics:     list[dict] = []   # [{section, title, include, comment}]
-    red_thread: str        = ""
+    topics:       list[dict] = []   # [{section, title, include, comment}]
+    red_thread:   str        = ""
+    extra_topics: list[dict] = []   # [{title, description}]
 
 
 @app.post("/api/approve")
@@ -228,53 +229,114 @@ async def approve_review(req: ApproveRequest, _auth: Auth):
     if state.phase != "review":
         raise HTTPException(status_code=409, detail="Pipeline ist nicht im Review-Modus.")
 
-    # Build human-readable review feedback for the writer
-    lines = []
-    if req.red_thread.strip():
-        lines.append(f"Roter Faden: {req.red_thread.strip()}")
-    for t in req.topics:
-        icon   = "✓" if t.get("include", True) else "✗"
-        title  = t.get("title", "?")
-        comment = t.get("comment", "").strip()
-        line   = f"  {icon} {t.get('section','')}: {title}"
-        if comment:
-            line += f" — {comment}"
-        lines.append(line)
+    # Count included topics (scan + custom)
+    included_count = sum(1 for t in req.topics if t.get("include", True))
+    included_count += len([et for et in req.extra_topics if et.get("title", "").strip()])
 
-    review_text = "\n".join(lines)
+    if included_count < 1:
+        raise HTTPException(status_code=422, detail="Mindestens 1 Thema muss ausgewählt sein.")
+
+    # Actually filter the research_notes.md — remove excluded topics, add custom ones
+    _filter_research_notes(req.topics, req.red_thread, req.extra_topics)
 
     # Store for the writer and signal the pipeline to continue
     state.review_data = {
-        "review_feedback": review_text,
-        "red_thread":      req.red_thread or getattr(state._run_request, "red_thread", ""),
+        "red_thread": req.red_thread or getattr(state._run_request, "red_thread", ""),
     }
 
-    # Restart the write phase with updated params
-    # The paused thread will receive the event and continue with updated kwargs
-    # We patch the orchestrator call by restarting from "write" in a new thread,
-    # while signalling the original thread to abort its wait
     state._pause_event.set()
-
-    # The original thread resumes from write with the original params.
-    # We need to inject review_feedback. Since we can't easily change the
-    # already-scheduled call, we write review feedback to research_notes as an
-    # annotation, which the writer will pick up.
-    _annotate_research_notes(review_text, req.red_thread)
 
     with state.lock:
         state.phase = "writing"
 
-    return {"status": "approved", "feedback_lines": len(lines)}
+    return {"status": "approved", "included": included_count}
 
 
-def _annotate_research_notes(review_feedback: str, red_thread: str):
-    """Append editorial review to research_notes.md so the writer agent picks it up."""
+def _filter_research_notes(topics: list[dict], red_thread: str, extra_topics: list[dict] | None = None):
+    """Remove excluded topics from research_notes.md and add custom topics.
+
+    This ensures the writer only sees the topics the editor approved.
+    The original file is backed up as research_notes_unfiltered.md.
+    """
+    import re
+
     notes = read_file(RESEARCH_NOTES_FILE)
+
+    # Backup original
+    backup = RESEARCH_NOTES_FILE.parent / "research_notes_unfiltered.md"
+    backup.write_text(notes, encoding="utf-8")
+
+    # Collect titles of excluded topics
+    excluded_titles = set()
+    for t in topics:
+        if not t.get("include", True):
+            excluded_titles.add(t.get("title", "").strip())
+
+    if excluded_titles:
+        # Remove ### blocks for excluded topics
+        # Each ### block runs until the next ### or ## or end of file
+        filtered_lines = []
+        skip = False
+        for line in notes.split("\n"):
+            # Check if this is a ### heading
+            if line.startswith("### "):
+                title = line[4:].strip()
+                # Check if this title matches any excluded title
+                skip = any(
+                    excl.lower() in title.lower() or title.lower() in excl.lower()
+                    for excl in excluded_titles
+                )
+                if skip:
+                    continue
+            # Stop skipping at next section boundary
+            if skip and (line.startswith("## ") or line.startswith("### ")):
+                skip = False
+                if line.startswith("### "):
+                    title = line[4:].strip()
+                    skip = any(
+                        excl.lower() in title.lower() or title.lower() in excl.lower()
+                        for excl in excluded_titles
+                    )
+                    if skip:
+                        continue
+            if not skip:
+                filtered_lines.append(line)
+
+        notes = "\n".join(filtered_lines)
+
+    # Remove empty sections (## Sektion with no ### underneath)
+    notes = re.sub(
+        r"(## Sektion \d+: [^\n]+\n---\n)\s*(?=## Sektion|\Z)",
+        "",
+        notes,
+    )
+
+    # Add editorial annotations
     annotation = "\n\n---\n\n## Redaktioneller Review\n"
     if red_thread.strip():
         annotation += f"\n**Roter Faden (manuell):** {red_thread.strip()}\n"
-    if review_feedback.strip():
-        annotation += f"\n**Themen-Entscheidungen:**\n{review_feedback}\n"
+
+    # Include/exclude summary for writer context
+    included = [t for t in topics if t.get("include", True)]
+    excluded = [t for t in topics if not t.get("include", True)]
+    if excluded:
+        annotation += "\n**Vom Redakteur entfernte Themen (NICHT verwenden):**\n"
+        for t in excluded:
+            annotation += f"- ✗ {t.get('title', '?')}\n"
+    for t in included:
+        comment = t.get("comment", "").strip()
+        if comment:
+            annotation += f"\n**Hinweis zu »{t.get('title','')}«:** {comment}\n"
+
+    # Add custom topics from editor
+    if extra_topics:
+        annotation += "\n\n## Zusätzliche Themen (vom Redakteur ergänzt)\n\n"
+        for et in extra_topics:
+            title = et.get("title", "").strip()
+            desc = et.get("description", "").strip()
+            if title:
+                annotation += f"### {title}\n\n{desc}\n\n---\n\n"
+
     RESEARCH_NOTES_FILE.write_text(notes.rstrip() + annotation, encoding="utf-8")
 
 
